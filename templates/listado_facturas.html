@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Facturas</title>
+</head>
+<body>
+    <h1>Listado de Facturas</h1>
+
+    <!-- Mostrar Totales -->
+    <div>
+        <h3>Totales de Acciones</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Total de Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for total in totales %}
+                <tr>
+                    <td>{{ total[0] }}</td> <!-- Compra o Venta -->
+                    <td>{{ total[1] }}</td> <!-- Total de Acciones -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla Principal -->
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>N° Factura</th>
+                <th>Nombre Entidad</th>
+                <th>Nombre Activo</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Sub Total</th>
+                <th>Valor Total</th>
+                <th>Factura PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+            <tr>
+                <td>{{ factura[0] }}</td>
+                <td>{{ factura[1] }}</td>
+                <td>{{ factura[2] }}</td>
+                <td>{{ factura[3] }}</td>
+                <td>{{ factura[4] }}</td>
+                <td>{{ factura[5] }}</td>
+                <td>{{ "{:,.2f}".format(factura[6]).replace(',', '.') }}</td>
+                <td>{{ "{:,.0f}".format(factura[7]).replace(',', '.') }}</td>
+                <td>{{ "{:,.0f}".format(factura[8]).replace(',', '.') }}</td>
+                <td>
+                    {% if factura[9] %}
+                    <a href="{{ factura[9] | replace('\\', '/') }}" target="_blank">📄 Ver</a>
+                    {% else %}
+                    Sin archivo
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/">
+        <button>Volver al inicio</button>
+    </a>
+</body>
+</html>
