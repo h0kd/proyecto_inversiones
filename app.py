@@ -8,20 +8,24 @@ import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash  # Para contraseñas seguras
 from functools import wraps
+from dotenv import load_dotenv  # Importar dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 
 # Configuración de Flask
 app = Flask(__name__)
-app.secret_key = 'BBF_Investment'  # Cambia esto a una clave secreta segura
+app.secret_key = os.getenv('FLASK_SECRET_KEY')  # Clave secreta desde .env
 
 # Conexión a PostgreSQL
 def get_db_connection():
     return psycopg2.connect(
-        dbname="programa_inversiones",
-        user="postgres",
-        password="leo20022002",
-        host="localhost",  
-        port="5432"
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT')
     )
 
 # Decorador para verificar si el usuario ha iniciado sesión
