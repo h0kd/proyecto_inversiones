@@ -12,10 +12,13 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <h1>Listado de Facturas</h1>
-
     <!-- Mostrar Totales -->
     <div>
       <h3>Totales de Acciones</h3>
@@ -119,8 +122,8 @@
               target="_blank"
               class="view-file"
               title="Abrir archivo PDF"
-              >📄 Ver</a
-            >
+              ><i class="fa-solid fa-file-pdf"></i
+            ></a>
             {% else %} <span class="no-file">Sin archivo</span> {% endif %}
           </td>
         </tr>
@@ -131,6 +134,9 @@
     <br />
     <a href="/">
       <button>Volver al inicio</button>
+    </a>
+    <a href="/add_factura">
+      <button>Agregar Factura</button>
     </a>
   </body>
 </html>

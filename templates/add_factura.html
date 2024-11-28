@@ -23,10 +23,14 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <h1>Agregar Factura</h1>
+  <body class="centered-form">
     <form action="/add_factura" method="POST" enctype="multipart/form-data">
+      <h1>Agregar Factura</h1>
       <label for="numero_factura">Número de Factura:</label>
       <input
         type="text"
@@ -143,7 +147,9 @@
       /><br /><br />
 
       <button type="submit">Agregar Factura</button>
-      <button type="button" onclick="location.href='/'">Volver</button>
+      <button type="button" onclick="location.href='/listado_facturas'">
+        Volver
+      </button>
     </form>
   </body>
 </html>

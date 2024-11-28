@@ -25,6 +25,16 @@ td {
   padding: 8px;
 }
 
+td {
+  font-family: "Roboto", sans-serif; /* Aplica Roboto a las celdas */
+  font-size: 14px; /* Ajusta el tamaño de fuente */
+  color: #333; /* Color del texto */
+  padding: 8px 10px; /* Espaciado interno */
+  border-bottom: 1px solid #ddd; /* Línea de separación entre filas */
+  text-align: center; /* Alineación del texto */
+  vertical-align: middle;
+}
+
 th {
   font-family: "Roboto", sans-serif;
   font-size: 1em;
@@ -73,16 +83,17 @@ h3 {
   color: #555; /* Un color ligeramente más suave */
 }
 
-/* Estilo para el enlace "📄 Ver" */
-a.view-file {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
+/* Ícono de archivo PDF */
+.view-file i {
+  color: #ff0000; /* Rojo para el ícono PDF */
+  font-size: 1.5em; /* Ajustar tamaño del ícono */
+  margin-right: 5px; /* Separación entre ícono y texto (si lo hay) */
 }
 
-a.view-file:hover {
-  color: #0056b3;
-  text-decoration: underline;
+/* Texto cuando no hay archivo */
+.no-file {
+  color: #999; /* Color gris para texto */
+  font-style: italic; /* Texto en cursiva */
 }
 
 /* Estilo para el texto "Sin archivo" */
@@ -90,4 +101,32 @@ span.no-file {
   color: #ff0000; /* Rojo */
   font-style: italic;
   font-weight: bold;
+}
+
+label {
+  font-family: "Roboto", sans-serif; /* Fuente Roboto */
+  font-size: 14px; /* Ajusta el tamaño */
+  color: #333; /* Color del texto */
+  font-weight: 400; /* Peso normal */
+  margin-bottom: 5px; /* Espacio debajo del label */
+  display: block; /* Asegura que el label esté en su propia línea */
+}
+
+.centered-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+.centered-form form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
 }
