@@ -387,6 +387,63 @@ def add_deposito():
 
     return render_template('add_deposito.html')
 
+@app.route('/acciones', methods=['GET'])
+@login_required
+def acciones():
+    # Obtener parámetros de búsqueda y ordenamiento
+    search_factura = request.args.get('search_factura', '')  # Búsqueda por N° de factura
+    search_ticker = request.args.get('search_ticker', '')    # Búsqueda por ticker
+    sort_by = request.args.get('sort_by', 'Fecha')          # Ordenar por Fecha por defecto
+    order = request.args.get('order', 'asc')                # Orden ascendente por defecto
+
+    # Validar las columnas para evitar SQL injection
+    valid_columns = ['NumeroFactura', 'Corredora', 'Fecha', 'Tipo', 'Ticker', 
+                     'Cantidad', 'PrecioUnitario', 'Comision', 'CostoTotal']
+    if sort_by not in valid_columns:
+        sort_by = 'Fecha'
+    if order not in ['asc', 'desc']:
+        order = 'asc'
+
+    # Conectar a la base de datos
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Construir la consulta SQL con filtros dinámicos
+    query = f"""
+        SELECT 
+            f.NumeroFactura, 
+            e.Nombre AS Corredora, 
+            f.Fecha, 
+            f.Tipo, 
+            f.NombreActivo AS Ticker, 
+            f.Cantidad, 
+            f.PrecioUnitario, 
+            f.Comision, 
+            (f.Cantidad * f.PrecioUnitario + COALESCE(f.Comision, 0)) AS CostoTotal, 
+            f.AdjuntoFactura
+        FROM Facturas f
+        JOIN Entidad e ON f.ID_Corredora = e.ID_Entidad
+        WHERE 1=1
+    """
+
+    params = []
+    if search_factura:
+        query += " AND CAST(f.NumeroFactura AS TEXT) LIKE %s"
+        params.append(f"%{search_factura}%")
+    if search_ticker:
+        query += " AND f.NombreActivo ILIKE %s"
+        params.append(f"%{search_ticker}%")
+
+    query += f" ORDER BY {sort_by} {order}"
+
+    cursor.execute(query, params)
+    acciones = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('acciones.html', acciones=acciones, sort_by=sort_by, order=order, 
+                           search_factura=search_factura, search_ticker=search_ticker)
+
 
 
 

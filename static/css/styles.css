@@ -130,3 +130,59 @@ label {
   max-width: 400px;
   box-sizing: border-box;
 }
+
+/* Estilo del contenedor de búsqueda */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Estilo del formulario */
+.search-bar form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estilo del input */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: "Roboto", sans-serif;
+}
+
+.search-bar form {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-bar label {
+  font-weight: bold;
+  color: #333;
+}
+
+.search-bar input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-bar button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #0056b3;
+}
