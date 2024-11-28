@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregar Depósito a Plazo</title>
+    <script>
+      function toggleFields() {
+        const tipo = document.getElementById("tipo").value;
+        const renovacionField = document.getElementById(
+          "fecha_renovacion_field"
+        );
+        const abonoField = document.getElementById("fecha_abono_field");
+
+        if (tipo === "Renovable") {
+          renovacionField.style.display = "block";
+          abonoField.style.display = "none";
+        } else {
+          renovacionField.style.display = "none";
+          abonoField.style.display = "block";
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Agregar Depósito a Plazo</h1>
+    <form action="/add_deposito" method="POST" enctype="multipart/form-data">
+      <!-- Número de Depósito -->
+      <label for="numero_deposito">Número de Depósito:</label>
+      <input
+        type="text"
+        id="numero_deposito"
+        name="numero_deposito"
+        required
+      /><br /><br />
+
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" name="tipo" onchange="toggleFields()" required>
+        <option value="Renovable">Renovable</option>
+        <option value="Fijo">Fijo</option></select
+      ><br /><br />
+
+      <label for="banco">Banco:</label>
+      <input
+        type="text"
+        id="banco"
+        name="banco"
+        oninput="this.value = this.value.toUpperCase();"
+        required
+      /><br /><br />
+
+      <label for="empresa">Empresa:</label>
+      <input
+        type="text"
+        id="empresa"
+        name="empresa"
+        oninput="this.value = this.value.toUpperCase();"
+        required
+      /><br /><br />
+
+      <label for="tasa_interes">Tasa de Interés:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="tasa_interes"
+        name="tasa_interes"
+        required
+      /><br /><br />
+
+      <label for="monto">Monto:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="monto"
+        name="monto"
+        required
+      /><br /><br />
+
+      <label for="valor_ganancia">Valor de Ganancia:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="valor_ganancia"
+        name="valor_ganancia"
+        required
+      /><br /><br />
+
+      <label for="total_deposito">Total del Depósito:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="total_deposito"
+        name="total_deposito"
+        required
+      /><br /><br />
+
+      <label for="fecha_toma">Fecha de Toma:</label>
+      <input
+        type="date"
+        id="fecha_toma"
+        name="fecha_toma"
+        required
+      /><br /><br />
+
+      <label for="fecha_termino">Fecha de Término:</label>
+      <input
+        type="date"
+        id="fecha_termino"
+        name="fecha_termino"
+        required
+      /><br /><br />
+
+      <div id="fecha_renovacion_field" style="display: none">
+        <label for="fecha_renovacion">Fecha de Renovación:</label>
+        <input
+          type="date"
+          id="fecha_renovacion"
+          name="fecha_renovacion"
+        /><br /><br />
+      </div>
+
+      <div id="fecha_abono_field" style="display: none">
+        <label for="fecha_abono">Fecha de Abono:</label>
+        <input type="date" id="fecha_abono" name="fecha_abono" /><br /><br />
+      </div>
+
+      <label for="comprobante">Comprobante:</label>
+      <input
+        type="file"
+        id="comprobante"
+        name="comprobante"
+        accept=".pdf"
+      /><br /><br />
+
+      <button type="submit">Guardar Depósito</button>
+    </form>
+
+    <br />
+    <a href="/deposito_a_plazo"><button>Volver a Depósitos a Plazo</button></a>
+  </body>
+</html>

@@ -6,10 +6,6 @@
     <title>Total por Tipo de Inversión</title>
 </head>
 <body>
-    <h1>Total por Tipo de Inversión</h1>
-    <div>
-        {{ graph|safe }}
-    </div>
     <a href="/add_factura">
         <button>Agregar Factura</button>
     </a>
@@ -17,5 +13,15 @@
     <a href="/listado_facturas">
         <button>Ver Listado de Facturas</button>
     </a>
+
+    <a href="/deposito_a_plazo">
+        <button>Depósito a Plazo</button>
+    </a>
+
+    <h1>Total por Tipo de Inversión</h1>
+    <div>
+        {{ graph|safe }}
+    </div>
+    
 </body>
 </html>

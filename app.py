@@ -190,7 +190,6 @@ def listado_facturas():
 
     return render_template('listado_facturas.html', facturas=facturas, totales=totales)
 
-
 # @app.route('/create_user', methods=['GET'])
 # def create_user():
 #     conn = get_db_connection()
@@ -243,6 +242,118 @@ def login():
 def logout():
     session.pop('user', None)  # Eliminar usuario de la sesión
     return redirect(url_for('login'))
+
+@app.route('/deposito_a_plazo', methods=['GET'])
+@login_required
+def deposito_a_plazo():
+    # Conexión a la base de datos
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Obtener los depósitos a plazo junto con información de empresa y banco
+    cursor.execute("""
+        SELECT 
+            dp.ID_Deposito, 
+            ec.Nombre AS Empresa, 
+            e.Nombre AS Banco, 
+            dp.FechaInicio, 
+            dp.FechaTermino, 
+            dp.Moneda, 
+            dp.MontoInicial, 
+            dp.MontoFinal, 
+            dp.Comprobante
+        FROM DepositoAPlazo dp
+        JOIN EntidadComercial ec ON dp.ID_Empresa = ec.ID_Entidad
+        JOIN Entidad e ON dp.ID_Banco = e.ID_Entidad
+    """)
+    depositos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('deposito_a_plazo.html', depositos=depositos)
+
+from datetime import datetime
+
+@app.route('/add_deposito', methods=['GET', 'POST'])
+@login_required
+def add_deposito():
+    if request.method == 'POST':
+        # Recibir datos del formulario
+        numero_deposito = request.form['numero_deposito']
+        tipo = request.form['tipo']
+        banco_nombre = request.form['banco'].upper()
+        empresa_nombre = request.form['empresa'].upper()
+        tasa_interes = float(request.form['tasa_interes'])
+        monto = float(request.form['monto'])
+        valor_ganancia = float(request.form['valor_ganancia'])
+        total_deposito = float(request.form['total_deposito'])
+        fecha_toma = request.form['fecha_toma']
+        fecha_termino = request.form['fecha_termino']
+        fecha_renovacion = request.form.get('fecha_renovacion') if tipo == 'Renovable' else None
+        fecha_abono = request.form.get('fecha_abono') if tipo == 'Fijo' else None
+
+        # Conexión a la base de datos
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Buscar o crear el banco
+        cursor.execute("SELECT ID_Entidad FROM Entidad WHERE Nombre = %s", (banco_nombre,))
+        banco_result = cursor.fetchone()
+
+        if not banco_result:
+            # Generar un RUT temporal para el banco
+            rut_temporal_banco = f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            cursor.execute("""
+                INSERT INTO Entidad (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Banco')
+                RETURNING ID_Entidad
+            """, (rut_temporal_banco, banco_nombre))
+            id_banco = cursor.fetchone()[0]
+        else:
+            id_banco = banco_result[0]
+
+        # Buscar o crear la empresa
+        cursor.execute("SELECT ID_Entidad FROM EntidadComercial WHERE Nombre = %s", (empresa_nombre,))
+        empresa_result = cursor.fetchone()
+
+        if not empresa_result:
+            # Generar un RUT temporal para la empresa
+            rut_temporal_empresa = f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            # Insertar nueva empresa con TipoEntidad = 'Empresa'
+            cursor.execute("""
+                INSERT INTO EntidadComercial (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Empresa')
+                RETURNING ID_Entidad
+            """, (rut_temporal_empresa, empresa_nombre))
+            id_empresa = cursor.fetchone()[0]
+        else:
+            id_empresa = empresa_result[0]
+
+        # Manejar archivo comprobante
+        comprobante = None
+        if 'comprobante' in request.files:
+            file = request.files['comprobante']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                comprobante = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("\\", "/")
+                file.save(comprobante)
+
+        # Insertar el depósito a plazo en la base de datos
+        cursor.execute("""
+            INSERT INTO DepositoAPlazo 
+            (ID_Deposito, ID_Banco, ID_Empresa, FechaInicio, FechaTermino, Moneda, MontoInicial, MontoFinal, Comprobante)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (numero_deposito, id_banco, id_empresa, fecha_toma, fecha_termino, 'CLP', monto, total_deposito, comprobante))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('deposito_a_plazo'))
+
+    return render_template('add_deposito.html')
+
+
 
 
 # Ejecutar la aplicación

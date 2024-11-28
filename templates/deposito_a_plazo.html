@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Depósito a Plazo</title>
+  </head>
+  <body>
+    <h1>Depósito a Plazo</h1>
+
+    <!-- Botón para agregar nuevo depósito -->
+    <a href="/add_deposito"><button>Agregar Depósito a Plazo</button></a>
+    <br />
+
+    <!-- Tabla de depósitos -->
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>N° Depósito</th>
+          <!-- Nueva columna -->
+          <th>Empresa</th>
+          <th>Banco</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Término</th>
+          <th>Moneda</th>
+          <th>Monto Inicial</th>
+          <th>Monto Final</th>
+          <th>Comprobante</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for deposito in depositos %}
+        <tr>
+          <td>{{ deposito[0] }}</td>
+          <!-- N° Depósito -->
+          <td>{{ deposito[1] }}</td>
+          <!-- Empresa -->
+          <td>{{ deposito[2] }}</td>
+          <!-- Banco -->
+          <td>{{ deposito[3] }}</td>
+          <!-- Fecha Inicio -->
+          <td>{{ deposito[4] }}</td>
+          <!-- Fecha Término -->
+          <td>{{ deposito[5] }}</td>
+          <!-- Moneda -->
+          <td>{{ "{:,.2f}".format(deposito[6]).replace(',', '.') }}</td>
+          <!-- Monto Inicial -->
+          <td>{{ "{:,.2f}".format(deposito[7] or 0).replace(',', '.') }}</td>
+          <!-- Monto Final -->
+          <td>
+            {% if deposito[8] %}
+            <a
+              href="{{ url_for('static', filename=deposito[8].replace('static/', '')) }}"
+              target="_blank"
+              >📄 Ver</a
+            >
+            {% else %} Sin comprobante {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>
