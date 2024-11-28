@@ -4,27 +4,81 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Depósito a Plazo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <h1>Depósito a Plazo</h1>
 
     <!-- Botón para agregar nuevo depósito -->
-    <a href="/add_deposito"><button>Agregar Depósito a Plazo</button></a>
-    <br />
+    <a href="/add_deposito">
+      <button style="margin-bottom: 20px">Agregar Depósito a Plazo</button>
+    </a>
 
     <!-- Tabla de depósitos -->
     <table border="1" cellpadding="5" cellspacing="0">
       <thead>
         <tr>
-          <th>N° Depósito</th>
-          <!-- Nueva columna -->
-          <th>Empresa</th>
-          <th>Banco</th>
-          <th>Fecha Inicio</th>
-          <th>Fecha Término</th>
-          <th>Moneda</th>
-          <th>Monto Inicial</th>
-          <th>Monto Final</th>
+          <th>
+            <a
+              href="?sort_by=ID_Deposito&order={{ 'asc' if sort_by != 'ID_Deposito' or order == 'desc' else 'desc' }}"
+              >N° Depósito</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Empresa&order={{ 'asc' if sort_by != 'Empresa' or order == 'desc' else 'desc' }}"
+              >Empresa</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Banco&order={{ 'asc' if sort_by != 'Banco' or order == 'desc' else 'desc' }}"
+              >Banco</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaInicio&order={{ 'asc' if sort_by != 'FechaInicio' or order == 'desc' else 'desc' }}"
+              >Fecha Inicio</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaTermino&order={{ 'asc' if sort_by != 'FechaTermino' or order == 'desc' else 'desc' }}"
+              >Fecha Término</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Moneda&order={{ 'asc' if sort_by != 'Moneda' or order == 'desc' else 'desc' }}"
+              >Moneda</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=MontoInicial&order={{ 'asc' if sort_by != 'MontoInicial' or order == 'desc' else 'desc' }}"
+              >Monto Inicial</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=MontoFinal&order={{ 'asc' if sort_by != 'MontoFinal' or order == 'desc' else 'desc' }}"
+              >Monto Final</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=TipoDeposito&order={{ 'asc' if sort_by != 'TipoDeposito' or order == 'desc' else 'desc' }}"
+              >Tipo Depósito</a
+            >
+          </th>
           <th>Comprobante</th>
         </tr>
       </thead>
@@ -32,26 +86,21 @@
         {% for deposito in depositos %}
         <tr>
           <td>{{ deposito[0] }}</td>
-          <!-- N° Depósito -->
           <td>{{ deposito[1] }}</td>
-          <!-- Empresa -->
           <td>{{ deposito[2] }}</td>
-          <!-- Banco -->
           <td>{{ deposito[3] }}</td>
-          <!-- Fecha Inicio -->
           <td>{{ deposito[4] }}</td>
-          <!-- Fecha Término -->
           <td>{{ deposito[5] }}</td>
-          <!-- Moneda -->
           <td>{{ "{:,.2f}".format(deposito[6]).replace(',', '.') }}</td>
-          <!-- Monto Inicial -->
           <td>{{ "{:,.2f}".format(deposito[7] or 0).replace(',', '.') }}</td>
-          <!-- Monto Final -->
+          <td>{{ deposito[9] }}</td>
           <td>
             {% if deposito[8] %}
             <a
               href="{{ url_for('static', filename=deposito[8].replace('static/', '')) }}"
               target="_blank"
+              class="view-file"
+              title="Abrir archivo PDF"
               >📄 Ver</a
             >
             {% else %} Sin comprobante {% endif %}

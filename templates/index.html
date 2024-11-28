@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Total por Tipo de Inversión</title>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <a href="/add_factura">
-        <button>Agregar Factura</button>
+      <button>Agregar Factura</button>
     </a>
     <!-- <h1>Bienvenido al Sistema de Facturas</h1> -->
     <a href="/listado_facturas">
-        <button>Ver Listado de Facturas</button>
+      <button>Ver Listado de Facturas</button>
     </a>
 
     <a href="/deposito_a_plazo">
-        <button>Depósito a Plazo</button>
+      <button>Depósito a Plazo</button>
     </a>
 
     <h1>Total por Tipo de Inversión</h1>
-    <div>
-        {{ graph|safe }}
-    </div>
-    
-</body>
+    <div>{{ graph|safe }}</div>
+  </body>
 </html>

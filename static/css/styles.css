@@ -1,0 +1,93 @@
+/* Estilo para los enlaces en los encabezados de la tabla */
+th a {
+  color: black; /* Cambia a cualquier color que prefieras */
+  text-decoration: none; /* Elimina el subrayado */
+}
+
+th a:hover {
+  color: darkblue; /* Color al pasar el mouse */
+  text-decoration: underline; /* Subrayado al pasar el mouse */
+}
+
+th a:visited {
+  color: black; /* Evita el color morado de enlaces visitados */
+}
+
+/* Opcional: Agrega más estilos para la tabla */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  font-family: "Roboto", sans-serif;
+  font-size: 1em;
+  font-weight: 500;
+  color: #555;
+  text-align: left;
+  padding: 10px;
+  background-color: #f8f8f8; /* Fondo claro */
+  border-bottom: 2px solid #ddd;
+}
+
+th:hover {
+  background-color: #e0e0e0; /* Fondo más oscuro al pasar el mouse */
+}
+
+button {
+  background-color: #007bff; /* Azul */
+  color: white; /* Texto en blanco */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px; /* Tamaño de fuente */
+  margin: 10px 5px; /* Margen alrededor del botón */
+  cursor: pointer; /* Cambia el cursor a puntero */
+  border-radius: 5px; /* Bordes redondeados */
+  transition: background-color 0.3s; /* Animación suave al pasar el mouse */
+}
+
+button:hover {
+  background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
+}
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-size: 2.5em; /* Ajusta el tamaño */
+  font-weight: 700; /* Opcional: negrita */
+  color: #333; /* Cambia a tu color preferido */
+}
+
+h3 {
+  font-family: "Lato", sans-serif;
+  font-size: 1.8em;
+  font-weight: 400;
+  color: #555; /* Un color ligeramente más suave */
+}
+
+/* Estilo para el enlace "📄 Ver" */
+a.view-file {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a.view-file:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Estilo para el texto "Sin archivo" */
+span.no-file {
+  color: #ff0000; /* Rojo */
+  font-style: italic;
+  font-weight: bold;
+}

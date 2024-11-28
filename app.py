@@ -155,12 +155,25 @@ def add_factura():
 @app.route('/listado_facturas', methods=['GET'])
 @login_required
 def listado_facturas():
+    # Obtener los parámetros de ordenación
+    sort_by = request.args.get('sort_by', 'NumeroFactura')  # Ordenar por NumeroFactura por defecto
+    order = request.args.get('order', 'asc')  # Orden ascendente por defecto
+
+    # Validar las columnas permitidas para ordenar
+    valid_columns = ['NumeroFactura', 'NombreEntidad', 'NombreActivo', 'Tipo', 'Fecha', 'Cantidad', 'PrecioUnitario', 'SubTotal', 'Valor']
+    if sort_by not in valid_columns:
+        sort_by = 'NumeroFactura'  # Valor por defecto si la columna no es válida
+
+    # Validar la dirección del orden
+    if order not in ['asc', 'desc']:
+        order = 'asc'
+
     # Conexión a la base de datos
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Consulta principal para las facturas
-    cursor.execute("""
+    # Consulta principal para las facturas con orden dinámico
+    query = f"""
         SELECT 
             f.NumeroFactura, 
             e.Nombre AS NombreEntidad, 
@@ -174,7 +187,9 @@ def listado_facturas():
             f.AdjuntoFactura
         FROM Facturas f
         JOIN Entidad e ON f.ID_Corredora = e.ID_Entidad
-    """)
+        ORDER BY {sort_by} {order}
+    """
+    cursor.execute(query)
     facturas = cursor.fetchall()
 
     # Consulta para obtener el total de acciones por tipo
@@ -188,7 +203,8 @@ def listado_facturas():
     cursor.close()
     conn.close()
 
-    return render_template('listado_facturas.html', facturas=facturas, totales=totales)
+    return render_template('listado_facturas.html', facturas=facturas, totales=totales, sort_by=sort_by, order=order)
+
 
 # @app.route('/create_user', methods=['GET'])
 # def create_user():
@@ -246,31 +262,50 @@ def logout():
 @app.route('/deposito_a_plazo', methods=['GET'])
 @login_required
 def deposito_a_plazo():
+    # Obtener los parámetros de ordenación
+    sort_by = request.args.get('sort_by', 'ID_Deposito')  # Ordenar por ID_Deposito por defecto
+    order = request.args.get('order', 'asc')  # Orden ascendente por defecto
+
+    # Validar las columnas permitidas para ordenar
+    valid_columns = ['ID_Deposito', 'Empresa', 'Banco', 'FechaInicio', 'FechaTermino', 'Moneda', 'MontoInicial', 'MontoFinal', 'TipoDeposito']
+    if sort_by not in valid_columns:
+        sort_by = 'ID_Deposito'  # Valor por defecto si la columna no es válida
+
+    # Validar la dirección del orden
+    if order not in ['asc', 'desc']:
+        order = 'asc'
+
     # Conexión a la base de datos
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Obtener los depósitos a plazo junto con información de empresa y banco
-    cursor.execute("""
+    # Consulta con orden dinámico
+    query = f"""
         SELECT 
-            dp.ID_Deposito, 
-            ec.Nombre AS Empresa, 
-            e.Nombre AS Banco, 
-            dp.FechaInicio, 
-            dp.FechaTermino, 
-            dp.Moneda, 
-            dp.MontoInicial, 
-            dp.MontoFinal, 
-            dp.Comprobante
-        FROM DepositoAPlazo dp
-        JOIN EntidadComercial ec ON dp.ID_Empresa = ec.ID_Entidad
-        JOIN Entidad e ON dp.ID_Banco = e.ID_Entidad
-    """)
+            d.ID_Deposito,
+            e.Nombre AS Empresa,
+            b.Nombre AS Banco,
+            d.FechaInicio,
+            d.FechaTermino,
+            d.Moneda,
+            d.MontoInicial,
+            d.MontoFinal,
+            d.Comprobante,
+            d.TipoDeposito
+        FROM DepositoAPlazo d
+        JOIN EntidadComercial e ON d.ID_Empresa = e.ID_Entidad
+        JOIN Entidad b ON d.ID_Banco = b.ID_Entidad
+        ORDER BY {sort_by} {order}
+    """
+    cursor.execute(query)
     depositos = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template('deposito_a_plazo.html', depositos=depositos)
+    # Renderizar la plantilla
+    return render_template('deposito_a_plazo.html', depositos=depositos, sort_by=sort_by, order=order)
+
 
 from datetime import datetime
 
@@ -280,7 +315,7 @@ def add_deposito():
     if request.method == 'POST':
         # Recibir datos del formulario
         numero_deposito = request.form['numero_deposito']
-        tipo = request.form['tipo']
+        tipo = request.form['tipo']  # Tipo de depósito
         banco_nombre = request.form['banco'].upper()
         empresa_nombre = request.form['empresa'].upper()
         tasa_interes = float(request.form['tasa_interes'])
@@ -341,10 +376,9 @@ def add_deposito():
         # Insertar el depósito a plazo en la base de datos
         cursor.execute("""
             INSERT INTO DepositoAPlazo 
-            (ID_Deposito, ID_Banco, ID_Empresa, FechaInicio, FechaTermino, Moneda, MontoInicial, MontoFinal, Comprobante)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (numero_deposito, id_banco, id_empresa, fecha_toma, fecha_termino, 'CLP', monto, total_deposito, comprobante))
-
+            (ID_Deposito, ID_Banco, ID_Empresa, FechaInicio, FechaTermino, Moneda, MontoInicial, MontoFinal, Comprobante, TipoDeposito)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (numero_deposito, id_banco, id_empresa, fecha_toma, fecha_termino, 'CLP', monto, total_deposito, comprobante, tipo))
         conn.commit()
         cursor.close()
         conn.close()
