@@ -504,6 +504,113 @@ def acciones_rendimiento():
     # Renderizar el gráfico en una nueva plantilla
     return render_template('acciones_rendimiento.html', graph=graph_html)
 
+@app.route('/fondos_mutuos', methods=['GET'])
+@login_required
+def fondos_mutuos():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+    SELECT 
+        f.ID_Fondo, 
+        f.Nombre, 
+        e.Nombre AS Empresa, 
+        b.Nombre AS Banco, 
+        f.TipoRiesgo, 
+        f.MontoInvertido, 
+        f.MontoFinal, 
+        f.FechaInicio, 
+        f.FechaTermino, 
+        CASE 
+            WHEN f.MontoFinal IS NOT NULL THEN 
+                ROUND(((f.MontoFinal - f.MontoInvertido) / f.MontoInvertido) * 100, 2)
+            ELSE NULL
+        END AS Rentabilidad,
+        f.Comprobante
+    FROM FondosMutuos f
+    JOIN EntidadComercial e ON f.ID_Entidad = e.ID_Entidad
+    JOIN Entidad b ON f.ID_Banco = b.ID_Entidad
+    ORDER BY f.ID_Fondo ASC;
+    """
+    cursor.execute(query)
+    fondos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('fondos_mutuos.html', fondos=fondos)
+
+@app.route('/add_fondo_mutuo', methods=['GET', 'POST'])
+@login_required
+def add_fondo_mutuo():
+    if request.method == 'POST':
+        # Capturar datos del formulario
+        nombre_fondo = request.form['nombre_fondo'].upper()
+        print(request.form)  # Para ver todos los datos enviados
+        monto_invertido = float(request.form.get('monto'))
+        print(f"Monto Invertido: {monto_invertido}")  # Verifica si llega el valor
+        monto_final = request.form.get('monto_final')
+        if monto_final:
+            monto_final = float(monto_final)
+        riesgo = request.form['riesgo']
+        fecha_inicio = request.form['fecha_inicio']
+        fecha_termino = request.form.get('fecha_termino', None)
+        empresa_nombre = request.form['empresa'].upper()
+        banco_nombre = request.form['banco'].upper()
+
+        # Manejar archivo comprobante
+        comprobante = None
+        if 'comprobante' in request.files:
+            file = request.files['comprobante']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                comprobante = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("\\", "/")
+                file.save(comprobante)
+
+        # Conectar a la base de datos
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Buscar o crear banco
+        cursor.execute("SELECT ID_Entidad FROM Entidad WHERE Nombre = %s", (banco_nombre,))
+        banco_result = cursor.fetchone()
+        if not banco_result:
+            rut_temporal = f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            cursor.execute("""
+                INSERT INTO Entidad (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Banco') RETURNING ID_Entidad
+            """, (rut_temporal, banco_nombre))
+            id_banco = cursor.fetchone()[0]
+        else:
+            id_banco = banco_result[0]
+
+        # Buscar o crear empresa
+        cursor.execute("SELECT ID_Entidad FROM EntidadComercial WHERE Nombre = %s", (empresa_nombre,))
+        empresa_result = cursor.fetchone()
+        if not empresa_result:
+            rut_temporal = f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            cursor.execute("""
+                INSERT INTO EntidadComercial (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Empresa') RETURNING ID_Entidad
+            """, (rut_temporal, empresa_nombre))
+            id_empresa = cursor.fetchone()[0]
+        else:
+            id_empresa = empresa_result[0]
+
+        # Insertar fondo mutuo
+        cursor.execute("""
+            INSERT INTO FondosMutuos 
+            (Nombre, MontoInvertido, MontoFinal, Rentabilidad, TipoRiesgo, FechaInicio, FechaTermino, ID_Entidad, ID_Banco, Comprobante)
+            VALUES (%s, %s, %s, NULL, %s, %s, %s, %s, %s, %s)
+        """, (nombre_fondo, monto_invertido, monto_final, riesgo, fecha_inicio, fecha_termino, id_empresa, id_banco, comprobante))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('fondos_mutuos'))
+
+    return render_template('add_fondo_mutuo.html')
+
+
+
+
 
 # Ejecutar la aplicación
 if __name__ == '__main__':
