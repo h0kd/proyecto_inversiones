@@ -196,18 +196,7 @@ def listado_facturas():
     cursor.execute(query)
     facturas = cursor.fetchall()
 
-    # Consulta para obtener el total de acciones por tipo
-    cursor.execute("""
-        SELECT Tipo, SUM(Cantidad) AS TotalAcciones
-        FROM Facturas
-        GROUP BY Tipo
-    """)
-    totales = cursor.fetchall()  # Esto devolverá una lista de tuplas [('Compra', total), ('Venta', total)]
-
-    cursor.close()
-    conn.close()
-
-    return render_template('listado_facturas.html', facturas=facturas, totales=totales, sort_by=sort_by, order=order)
+    return render_template('listado_facturas.html', facturas=facturas, sort_by=sort_by, order=order)
 
 
 # @app.route('/create_user', methods=['GET'])
@@ -430,6 +419,14 @@ def acciones():
         WHERE 1=1
     """
 
+    # Consulta para obtener el total de acciones por tipo
+    cursor.execute("""
+        SELECT Tipo, SUM(Cantidad) AS TotalAcciones
+        FROM Facturas
+        GROUP BY Tipo
+    """)
+    totales = cursor.fetchall()  # Esto devolverá una lista de tuplas [('Compra', total), ('Venta', total)]
+
     params = []
     if search_factura:
         query += " AND CAST(f.NumeroFactura AS TEXT) LIKE %s"
@@ -446,7 +443,7 @@ def acciones():
     conn.close()
 
     return render_template('acciones.html', acciones=acciones, sort_by=sort_by, order=order, 
-                           search_factura=search_factura, search_ticker=search_ticker)
+                           search_factura=search_factura, search_ticker=search_ticker, totales=totales)
 
 @app.route('/acciones_rendimiento', methods=['GET'])
 @login_required
@@ -507,9 +504,32 @@ def acciones_rendimiento():
 @app.route('/fondos_mutuos', methods=['GET'])
 @login_required
 def fondos_mutuos():
+    # Capturar parámetros de ordenamiento
+    sort_by = request.args.get('sort_by', 'f.ID_Fondo')  # Ordenar por ID_Fondo por defecto
+    order = request.args.get('order', 'asc')  # Orden ascendente por defecto
+
+    # Validar columnas permitidas para evitar SQL injection
+    valid_columns = {
+        'ID_Fondo': 'f.ID_Fondo',
+        'Nombre': 'f.Nombre',
+        'Empresa': 'e.Nombre',
+        'Banco': 'b.Nombre',
+        'TipoRiesgo': 'f.TipoRiesgo',
+        'MontoInvertido': 'f.MontoInvertido',
+        'MontoFinal': 'f.MontoFinal',
+        'FechaInicio': 'f.FechaInicio',
+        'FechaTermino': 'f.FechaTermino',
+        'Rentabilidad': 'Rentabilidad'
+    }
+
+    sort_column = valid_columns.get(sort_by, 'f.ID_Fondo')
+    if order not in ['asc', 'desc']:
+        order = 'asc'
+
+    # Conexión y consulta
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = """
+    query = f"""
     SELECT 
         f.ID_Fondo, 
         f.Nombre, 
@@ -529,29 +549,33 @@ def fondos_mutuos():
     FROM FondosMutuos f
     JOIN EntidadComercial e ON f.ID_Entidad = e.ID_Entidad
     JOIN Entidad b ON f.ID_Banco = b.ID_Entidad
-    ORDER BY f.ID_Fondo ASC;
+    ORDER BY {sort_column} {order};
     """
     cursor.execute(query)
     fondos = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template('fondos_mutuos.html', fondos=fondos)
+
+    return render_template('fondos_mutuos.html', fondos=fondos, sort_by=sort_by, order=order)
 
 @app.route('/add_fondo_mutuo', methods=['GET', 'POST'])
 @login_required
 def add_fondo_mutuo():
     if request.method == 'POST':
+        print(request.form)  # Imprime todos los datos enviados por el formulario
         # Capturar datos del formulario
         nombre_fondo = request.form['nombre_fondo'].upper()
-        print(request.form)  # Para ver todos los datos enviados
-        monto_invertido = float(request.form.get('monto'))
-        print(f"Monto Invertido: {monto_invertido}")  # Verifica si llega el valor
+        monto_invertido = float(request.form.get('monto_invertido'))
         monto_final = request.form.get('monto_final')
         if monto_final:
             monto_final = float(monto_final)
+        else:
+            monto_final = None  # Usar None para valores nulos en SQL
         riesgo = request.form['riesgo']
         fecha_inicio = request.form['fecha_inicio']
-        fecha_termino = request.form.get('fecha_termino', None)
+        fecha_termino = request.form.get('fecha_termino')
+        if not fecha_termino:  # Si está vacío o None
+            fecha_termino = None
         empresa_nombre = request.form['empresa'].upper()
         banco_nombre = request.form['banco'].upper()
 
@@ -608,7 +632,46 @@ def add_fondo_mutuo():
 
     return render_template('add_fondo_mutuo.html')
 
+@app.route('/edit_fondo_mutuo/<int:id_fondo>', methods=['GET', 'POST'])
+@login_required
+def edit_fondo_mutuo(id_fondo):
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
+    if request.method == 'POST':
+        # Capturar los datos enviados desde el formulario
+        monto_final = request.form.get('monto_final')
+        fecha_termino = request.form.get('fecha_termino')
+
+        # Validar y convertir los valores
+        monto_final = float(monto_final) if monto_final else None
+        fecha_termino = fecha_termino if fecha_termino else None
+
+        # Actualizar la tabla FondosMutuos
+        cursor.execute("""
+            UPDATE FondosMutuos
+            SET MontoFinal = %s, FechaTermino = %s
+            WHERE ID_Fondo = %s
+        """, (monto_final, fecha_termino, id_fondo))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        # Redirigir al listado después de guardar
+        return redirect(url_for('fondos_mutuos'))
+
+    # Si es GET, obtener los datos del fondo actual para mostrar en el formulario
+    cursor.execute("""
+        SELECT ID_Fondo, Nombre, MontoFinal, FechaTermino
+        FROM FondosMutuos
+        WHERE ID_Fondo = %s
+    """, (id_fondo,))
+    fondo = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return render_template('edit_fondo_mutuo.html', fondo=fondo)
 
 
 

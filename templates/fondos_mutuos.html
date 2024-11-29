@@ -12,6 +12,15 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <h1>Fondos Mutuos</h1>
@@ -24,64 +33,75 @@
           <th>
             <a
               href="?sort_by=ID_Fondo&order={{ 'asc' if sort_by != 'ID_Fondo' or order == 'desc' else 'desc' }}"
-              >ID Fondo</a
             >
+              ID Fondo
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=Nombre&order={{ 'asc' if sort_by != 'Nombre' or order == 'desc' else 'desc' }}"
-              >Nombre</a
             >
+              Nombre
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=Empresa&order={{ 'asc' if sort_by != 'Empresa' or order == 'desc' else 'desc' }}"
-              >Empresa</a
             >
+              Empresa
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=Banco&order={{ 'asc' if sort_by != 'Banco' or order == 'desc' else 'desc' }}"
-              >Banco</a
             >
+              Banco
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=TipoRiesgo&order={{ 'asc' if sort_by != 'TipoRiesgo' or order == 'desc' else 'desc' }}"
-              >Riesgo</a
             >
+              Riesgo
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=MontoInvertido&order={{ 'asc' if sort_by != 'MontoInvertido' or order == 'desc' else 'desc' }}"
-              >Monto Invertido</a
             >
+              Monto Invertido
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=MontoFinal&order={{ 'asc' if sort_by != 'MontoFinal' or order == 'desc' else 'desc' }}"
-              >Monto Final</a
             >
+              Monto Final
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=FechaInicio&order={{ 'asc' if sort_by != 'FechaInicio' or order == 'desc' else 'desc' }}"
-              >Fecha Inicio</a
             >
+              Fecha Inicio
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=FechaTermino&order={{ 'asc' if sort_by != 'FechaTermino' or order == 'desc' else 'desc' }}"
-              >Fecha Término</a
             >
+              Fecha Término
+            </a>
           </th>
           <th>
             <a
               href="?sort_by=Rentabilidad&order={{ 'asc' if sort_by != 'Rentabilidad' or order == 'desc' else 'desc' }}"
-              >Rentabilidad</a
             >
+              Rentabilidad
+            </a>
           </th>
           <th>Comprobante</th>
+          <th>Edicion</th>
         </tr>
       </thead>
 
@@ -127,6 +147,13 @@
             </a>
             {% else %} Sin comprobante {% endif %}
           </td>
+          <!-- Comprobante -->
+          <td>
+            <a href="{{ url_for('edit_fondo_mutuo', id_fondo=fondo[0]) }}">
+              <button>Editar</button>
+            </a>
+          </td>
+          <!-- Botón para editar -->
         </tr>
         {% endfor %}
       </tbody>

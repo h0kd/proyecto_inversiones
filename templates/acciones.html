@@ -12,6 +12,15 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <h1>Listado de Acciones</h1>
@@ -44,6 +53,29 @@
     <a href="/acciones_rendimiento">
       <button>Ver Gráfico de Rendimiento</button>
     </a>
+
+    <!-- Mostrar Totales -->
+    <div>
+      <h3>Totales de Acciones</h3>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Total de Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for total in totales %}
+          <tr>
+            <td>{{ total[0] }}</td>
+            <!-- Compra o Venta -->
+            <td>{{ total[1] }}</td>
+            <!-- Total de Acciones -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
     <!-- Tabla de Acciones -->
     <table border="1" cellpadding="5" cellspacing="0">
