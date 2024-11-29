@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boletas de Garantía</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Boletas de Garantía</h1>
+    <a href="/add_boleta_garantia"><button>Agregar Boleta</button></a>
+    <br /><br />
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Banco</th>
+          <th>Beneficiario</th>
+          <th>Glosa</th>
+          <th>Vencimiento</th>
+          <th>Moneda</th>
+          <th>Monto</th>
+          <th>Fecha Emisión</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for boleta in boletas %}
+        <tr>
+          <td>{{ boleta[0] }}</td>
+          <td>{{ boleta[1] }}</td>
+          <td>{{ boleta[2] }}</td>
+          <td>{{ boleta[3] }}</td>
+          <td>{{ boleta[4] }}</td>
+          <td>{{ boleta[5] }}</td>
+          <td>{{ "{:,.2f}".format(boleta[6]).replace(',', '.') }}</td>
+          <td>{{ boleta[7] }}</td>
+          <td>{{ boleta[8] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>

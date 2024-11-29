@@ -673,6 +673,92 @@ def edit_fondo_mutuo(id_fondo):
 
     return render_template('edit_fondo_mutuo.html', fondo=fondo)
 
+@app.route('/boletas_garantia', methods=['GET'])
+@login_required
+def boletas_garantia():
+    # Conectar a la base de datos
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Consulta para obtener las boletas
+    query = """
+    SELECT 
+        bg.Numero,
+        e.Nombre AS Banco,
+        ec.Nombre AS Beneficiario,
+        bg.Glosa,
+        bg.Vencimiento,
+        bg.Moneda,
+        bg.Monto,
+        bg.FechaEmision,
+        bg.Estado
+    FROM BoletaGarantia bg
+    JOIN Entidad e ON bg.ID_Banco = e.ID_Entidad
+    JOIN EntidadComercial ec ON bg.ID_Beneficiario = ec.ID_Entidad
+    ORDER BY bg.Numero ASC;
+    """
+    cursor.execute(query)
+    boletas = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('boletas_garantia.html', boletas=boletas)
+
+@app.route('/add_boleta_garantia', methods=['GET', 'POST'])
+@login_required
+def add_boleta_garantia():
+    if request.method == 'POST':
+        # Capturar los datos del formulario
+        banco = request.form['banco']
+        beneficiario = request.form['beneficiario']
+        glosa = request.form.get('glosa', '')
+        vencimiento = request.form['vencimiento']
+        moneda = request.form['moneda']
+        monto = float(request.form['monto'])
+        fecha_emision = request.form['fecha_emision']
+        estado = request.form['estado']
+
+        # Conectar a la base de datos
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Buscar o crear el banco
+        cursor.execute("SELECT ID_Entidad FROM Entidad WHERE Nombre = %s", (banco,))
+        banco_result = cursor.fetchone()
+        if not banco_result:
+            cursor.execute("""
+                INSERT INTO Entidad (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Banco') RETURNING ID_Entidad
+            """, (f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}", banco))
+            id_banco = cursor.fetchone()[0]
+        else:
+            id_banco = banco_result[0]
+
+        # Buscar o crear el beneficiario
+        cursor.execute("SELECT ID_Entidad FROM EntidadComercial WHERE Nombre = %s", (beneficiario,))
+        beneficiario_result = cursor.fetchone()
+        if not beneficiario_result:
+            cursor.execute("""
+                INSERT INTO EntidadComercial (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Cliente') RETURNING ID_Entidad
+            """, (f"TEMP-{datetime.now().strftime('%Y%m%d%H%M%S')}", beneficiario))
+            id_cliente = cursor.fetchone()[0]
+        else:
+            id_cliente = beneficiario_result[0]
+
+        # Insertar la nueva boleta
+        cursor.execute("""
+            INSERT INTO BoletaGarantia 
+            (ID_Banco, ID_Cliente, Glosa, Vencimiento, Moneda, Monto, FechaEmision, Estado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (id_banco, id_cliente, glosa, vencimiento, moneda, monto, fecha_emision, estado))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('boletas_garantia'))
+
+    return render_template('add_boleta_garantia.html')
 
 
 # Ejecutar la aplicación
