@@ -21,6 +21,7 @@
       href="{{ url_for('static', filename='images/favicon.png') }}"
       type="image/x-icon"
     />
+    <script src="{{ url_for('static', filename='js/deleteAlert.js') }}"></script>
   </head>
   <body>
     <h1>Depósito a Plazo</h1>
@@ -43,7 +44,7 @@
           <th>
             <a
               href="?sort_by=Empresa&order={{ 'asc' if sort_by != 'Empresa' or order == 'desc' else 'desc' }}"
-              >Empresa</a
+              >Beneficiario</a
             >
           </th>
           <th>
@@ -54,14 +55,14 @@
           </th>
           <th>
             <a
-              href="?sort_by=FechaInicio&order={{ 'asc' if sort_by != 'FechaInicio' or order == 'desc' else 'desc' }}"
-              >Fecha Inicio</a
+              href="?sort_by=FechaEmision&order={{ 'asc' if sort_by != 'FechaEmision' or order == 'desc' else 'desc' }}"
+              >Fecha Emisión</a
             >
           </th>
           <th>
             <a
-              href="?sort_by=FechaTermino&order={{ 'asc' if sort_by != 'FechaTermino' or order == 'desc' else 'desc' }}"
-              >Fecha Término</a
+              href="?sort_by=FechaVencimiento&order={{ 'asc' if sort_by != 'FechaVencimiento' or order == 'desc' else 'desc' }}"
+              >Fecha Vencimiento</a
             >
           </th>
           <th>
@@ -78,17 +79,24 @@
           </th>
           <th>
             <a
-              href="?sort_by=MontoFinal&order={{ 'asc' if sort_by != 'MontoFinal' or order == 'desc' else 'desc' }}"
-              >Monto Final</a
-            >
-          </th>
-          <th>
-            <a
               href="?sort_by=TipoDeposito&order={{ 'asc' if sort_by != 'TipoDeposito' or order == 'desc' else 'desc' }}"
               >Tipo Depósito</a
             >
           </th>
+          <th>
+            <a
+              href="?sort_by=CapitalRenovacion&order={{ 'asc' if sort_by != 'CapitalRenovacion' or order == 'desc' else 'desc' }}"
+              >Capital Renovación</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=PlazoRenovacion&order={{ 'asc' if sort_by != 'PlazoRenovacion' or order == 'desc' else 'desc' }}"
+              >Plazo Renovación</a
+            >
+          </th>
           <th>Comprobante</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -101,18 +109,32 @@
           <td>{{ deposito[4] }}</td>
           <td>{{ deposito[5] }}</td>
           <td>{{ "{:,.2f}".format(deposito[6]).replace(',', '.') }}</td>
-          <td>{{ "{:,.2f}".format(deposito[7] or 0).replace(',', '.') }}</td>
-          <td>{{ deposito[9] }}</td>
+          <td>{{ deposito[8] }}</td>
+          <td>{{ "{:,.2f}".format(deposito[9] or 0).replace(',', '.') }}</td>
+          <td>{{ deposito[10] }}</td>
           <td>
-            {% if deposito[8] %}
+            {% if deposito[11] %}
             <a
-              href="{{ url_for('static', filename=deposito[8].replace('static/', '')) }}"
+              href="{{ url_for('static', filename=deposito[11].replace('static/', '')) }}"
               target="_blank"
               class="view-file"
               title="Abrir archivo PDF"
               ><i class="fa-solid fa-file-pdf"></i
             ></a>
             {% else %} Sin comprobante {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('edit_deposito', id_deposito=deposito[0]) }}">
+              <button>Editar</button>
+            </a>
+            <form
+              action="/delete_deposito/{{ deposito[0] }}"
+              method="POST"
+              style="display: inline"
+              onsubmit="return confirmDelete(event);"
+            >
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
           </td>
         </tr>
         {% endfor %}

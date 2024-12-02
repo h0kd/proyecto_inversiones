@@ -186,3 +186,34 @@ label {
 .search-bar button:hover {
   background-color: #0056b3;
 }
+
+/* Aplica el estilo a todas las etiquetas legend */
+legend {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333; /* Ajusta el color si es necesario */
+}
+
+/* Si solo deseas aplicarlo a esta sección, usa una clase */
+fieldset.renovacion legend {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #555; /* Otro color opcional */
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Color rojo */
+  color: #fff; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px; /* Tamaño de fuente */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Rojo más oscuro al pasar el cursor */
+}
