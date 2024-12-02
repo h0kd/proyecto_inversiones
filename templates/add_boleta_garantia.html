@@ -10,7 +10,11 @@
     />
   </head>
   <body class="centered-form">
-    <form action="/add_boleta_garantia" method="POST">
+    <form
+      action="/add_boleta_garantia"
+      method="POST"
+      enctype="multipart/form-data"
+    >
       <h1>Agregar Boleta de Garantía</h1>
       <label for="banco">Banco:</label>
       <input
@@ -72,6 +76,10 @@
         <option value="Vigente">Vigente</option>
         <option value="Vencida">Vencida</option></select
       ><br /><br />
+
+      <label for="documento">Adjuntar Documento (PDF):</label>
+      <input type="file" id="documento" name="documento" accept=".pdf" />
+      <br /><br />
 
       <button type="submit">Guardar</button>
       <button type="button" onclick="location.href='/boletas_garantia'">
