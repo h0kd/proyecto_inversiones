@@ -942,6 +942,9 @@ def boletas_garantia():
 def add_boleta_garantia():
     if request.method == 'POST':
         # Capturar datos del formulario
+        numero_boleta = request.form['numero_boleta']
+        tomada_por_empresa = request.form['tomada_por_empresa'].upper()
+        tomada_por_rut = request.form['tomada_por_rut']
         banco_nombre = request.form['banco'].upper()
         beneficiario_nombre = request.form['beneficiario'].upper()
         glosa = request.form['glosa']
@@ -993,9 +996,9 @@ def add_boleta_garantia():
         # Insertar boleta de garantía
         cursor.execute("""
             INSERT INTO BoletaGarantia 
-            (ID_Banco, ID_Beneficiario, Glosa, Vencimiento, Moneda, Monto, FechaEmision, Estado, Documento)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (id_banco, id_beneficiario, glosa, vencimiento, moneda, monto, fecha_emision, estado, documento))
+            (Numero, ID_Banco, ID_Beneficiario, Glosa, Vencimiento, Moneda, Monto, FechaEmision, Estado, Documento, Tomada_Por_Empresa, Tomada_Por_Rut)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (numero_boleta ,id_banco, id_beneficiario, glosa, vencimiento, moneda, monto, fecha_emision, estado, documento, tomada_por_empresa, tomada_por_rut))
         conn.commit()
         cursor.close()
         conn.close()
