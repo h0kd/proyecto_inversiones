@@ -70,7 +70,6 @@ def index():
 
     return render_template('index.html', graph=graph_html)
 
-
 @app.route('/add_factura', methods=['GET', 'POST'])
 @login_required
 def add_factura():
@@ -233,13 +232,14 @@ def login():
         # Conectar a la base de datos y verificar usuario
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT Contraseña FROM Usuarios WHERE NombreUsuario = %s", (username,))
+        cursor.execute("SELECT ID, Contraseña FROM Usuarios WHERE NombreUsuario = %s", (username,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if user and check_password_hash(user[0], password):
-            session['user'] = username  # Guardar usuario en la sesión
+        if user and check_password_hash(user[1], password):  # Verifica la contraseña
+            session['user'] = username  # Guardar nombre de usuario en la sesión
+            session['user_id'] = user[0]  # Guardar ID del usuario en la sesión
             return redirect(url_for('index'))  # Redirigir a la página principal
         else:
             return "Usuario o contraseña incorrectos", 401
@@ -251,6 +251,65 @@ def login():
 def logout():
     session.pop('user', None)  # Eliminar usuario de la sesión
     return redirect(url_for('login'))
+
+@app.route('/cambiar_contrasena', methods=['GET', 'POST'])
+@login_required
+def cambiar_contrasena():
+    if 'user_id' not in session:
+        flash("Debe iniciar sesión para cambiar la contraseña.", "error")
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        try:
+            contrasena_actual = request.form['contrasena_actual']
+            nueva_contrasena = request.form['nueva_contrasena']
+            confirmar_contrasena = request.form['confirmar_contrasena']
+
+            # Verificar la contraseña actual
+            cursor.execute("SELECT Contraseña FROM Usuarios WHERE ID = %s", (session['user_id'],))
+            resultado = cursor.fetchone()
+
+            if not resultado:
+                flash("Usuario no encontrado.", "error")
+                return redirect(url_for('cambiar_contrasena'))
+
+            contrasena_hash = resultado[0]
+            if not check_password_hash(contrasena_hash, contrasena_actual):
+                flash("La contraseña actual es incorrecta.", "error")
+                return redirect(url_for('cambiar_contrasena'))
+
+            if nueva_contrasena != confirmar_contrasena:
+                flash("Las nuevas contraseñas no coinciden.", "error")
+                return redirect(url_for('cambiar_contrasena'))
+
+            # Actualizar la nueva contraseña
+            nuevo_hash = generate_password_hash(nueva_contrasena)
+            cursor.execute("UPDATE Usuarios SET Contraseña = %s WHERE ID = %s", (nuevo_hash, session['user_id']))
+            conn.commit()
+
+            flash("Contraseña cambiada con éxito.", "success")
+            return redirect(url_for('inicio'))
+        except Exception as e:
+            print(f"Error al cambiar la contraseña: {e}")
+            flash("Hubo un error al cambiar la contraseña.", "error")
+            return redirect(url_for('cambiar_contrasena'))
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('cambiar_contrasena.html')
+
+@app.route('/test_password', methods=['GET'])
+def test_password():
+    contraseña_original = 'admin123'
+    contraseña_hash = generate_password_hash(contraseña_original)
+
+    # Probar verificación
+    resultado = check_password_hash(contraseña_hash, contraseña_original)
+    return f"Hash generado: {contraseña_hash}, Verificación: {resultado}"
 
 @app.route('/deposito_a_plazo', methods=['GET'])
 @login_required
@@ -649,9 +708,10 @@ def acciones_rendimiento():
 @app.route('/fondos_mutuos', methods=['GET'])
 @login_required
 def fondos_mutuos():
-    # Capturar parámetros de ordenamiento
+    # Capturar parámetros de ordenamiento y búsqueda
     sort_by = request.args.get('sort_by', 'f.ID_Fondo')  # Ordenar por ID_Fondo por defecto
     order = request.args.get('order', 'asc')  # Orden ascendente por defecto
+    search_query = request.args.get('search', '').strip()  # Capturar la búsqueda
 
     # Validar columnas permitidas para evitar SQL injection
     valid_columns = {
@@ -674,6 +734,8 @@ def fondos_mutuos():
     # Conexión y consulta
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Consulta base
     query = f"""
     SELECT 
         f.ID_Fondo, 
@@ -694,14 +756,27 @@ def fondos_mutuos():
     FROM FondosMutuos f
     JOIN EntidadComercial e ON f.ID_Entidad = e.ID_Entidad
     JOIN Entidad b ON f.ID_Banco = b.ID_Entidad
-    ORDER BY {sort_column} {order};
     """
-    cursor.execute(query)
+
+    # Agregar filtro de búsqueda si se proporciona un término
+    if search_query:
+        query += " WHERE e.Nombre ILIKE %s"
+
+    # Ordenar por la columna especificada
+    query += f" ORDER BY {sort_column} {order};"
+
+    # Ejecutar la consulta
+    if search_query:
+        cursor.execute(query, (f"%{search_query}%",))
+    else:
+        cursor.execute(query)
+
     fondos = cursor.fetchall()
     cursor.close()
     conn.close()
 
-    return render_template('fondos_mutuos.html', fondos=fondos, sort_by=sort_by, order=order)
+    return render_template('fondos_mutuos.html', fondos=fondos, sort_by=sort_by, order=order, search_query=search_query)
+
 
 @app.route('/add_fondo_mutuo', methods=['GET', 'POST'])
 @login_required

@@ -27,6 +27,18 @@
     <a href="/add_fondo_mutuo"><button>Agregar Fondo Mutuo</button></a>
     <br /><br />
 
+    <form action="/fondos_mutuos" method="get" style="margin-bottom: 20px">
+      <label for="search">Buscar por empresa:</label>
+      <input
+        type="text"
+        id="search"
+        name="search"
+        placeholder="Ingrese el nombre de la empresa"
+        value="{{ search_query }}"
+      />
+      <button type="submit">Buscar</button>
+    </form>
+
     <table border="1" cellpadding="5" cellspacing="0">
       <thead>
         <tr>

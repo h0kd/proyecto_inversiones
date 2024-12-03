@@ -217,3 +217,14 @@ fieldset.renovacion legend {
 .btn-danger:hover {
   background-color: #c82333; /* Rojo más oscuro al pasar el cursor */
 }
+
+.btn-important {
+  background-color: #ff4800; /* Color rojo */
+  color: #fff; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px; /* Tamaño de fuente */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
