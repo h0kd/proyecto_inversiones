@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Póliza</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="centered-form">
+    <form action="/edit_poliza/{{ poliza[0] }}" method="POST" enctype="multipart/form-data">
+      <h1>Editar Póliza de Seguro</h1>
+      <label for="numero">N° de Póliza:</label>
+      <input type="text" id="numero" name="numero" value="{{ poliza[0] }}" readonly /><br /><br />
+
+      <label for="tipo_asegurado">Tipo de Asegurado:</label>
+      <select id="tipo_asegurado" name="tipo_asegurado" required>
+        <option value="Cliente" {% if poliza[1] == "Cliente" %}selected{% endif %}>Cliente</option>
+        <option value="Empresa" {% if poliza[1] == "Empresa" %}selected{% endif %}>Empresa</option>
+      </select>
+      <br /><br />
+
+      <label for="fecha_inicio">Fecha de Inicio:</label>
+      <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ poliza[2] }}" required /><br /><br />
+
+      <label for="fecha_termino">Fecha de Término:</label>
+      <input type="date" id="fecha_termino" name="fecha_termino" value="{{ poliza[3] }}" required /><br /><br />
+
+      <label for="monto">Monto:</label>
+      <input type="number" step="0.01" id="monto" name="monto" value="{{ poliza[4] }}" required /><br /><br />
+
+      <label for="adjunto_poliza">Adjunto de la Póliza:</label>
+      {% if poliza[5] %}
+      <a href="{{ url_for('static', filename=poliza[5].replace('static/', '')) }}" target="_blank" class="view-file"><i class="fa-solid fa-file-pdf"></i
+        ></a>
+      <br />
+      {% endif %}
+      <input type="file" id="adjunto_poliza" name="adjunto_poliza" accept=".pdf" /><br /><br />
+
+      <button type="submit">Guardar Cambios</button>
+      <a href="/polizas"><button type="button">Cancelar</button></a>
+    </form>
+  </body>
+</html>

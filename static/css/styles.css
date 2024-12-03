@@ -228,3 +228,14 @@ fieldset.renovacion legend {
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
+
+.flash.success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+}
+.flash.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+}

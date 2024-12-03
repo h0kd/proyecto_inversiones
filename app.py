@@ -993,6 +993,20 @@ def add_boleta_garantia():
         else:
             id_beneficiario = beneficiario_result[0]
 
+        # Buscar o crear la empresa que tomó la boleta
+        cursor.execute("""
+            SELECT ID_Entidad FROM EntidadComercial WHERE Nombre = %s AND Rut = %s AND TipoEntidad = 'Empresa'
+        """, (tomada_por_empresa, tomada_por_rut))
+        tomada_por_result = cursor.fetchone()
+        if not tomada_por_result:
+            cursor.execute("""
+                INSERT INTO EntidadComercial (Rut, Nombre, TipoEntidad)
+                VALUES (%s, %s, 'Empresa') RETURNING ID_Entidad
+            """, (tomada_por_rut, tomada_por_empresa))
+            id_tomada_por = cursor.fetchone()[0]
+        else:
+            id_tomada_por = tomada_por_result[0]
+
         # Insertar boleta de garantía
         cursor.execute("""
             INSERT INTO BoletaGarantia 
@@ -1054,9 +1068,78 @@ def edit_boleta_garantia(numero):
 
     return render_template('edit_boleta_garantia.html', boleta=boleta, numero=numero)
 
-@app.route('/polizas', methods=['GET', 'POST'])
+@app.route('/polizas', methods=['GET'])
 @login_required
-def polizas():
+def listar_polizas():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Consultar pólizas existentes
+    cursor.execute("SELECT * FROM Polizas ORDER BY Numero")
+    polizas = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('polizas.html', polizas=polizas)
+
+@app.route('/add_poliza', methods=['GET', 'POST'])
+@login_required
+def agregar_poliza():
+    if request.method == 'POST':
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            # Capturar datos del formulario
+            numero = request.form['numero']  # Corregido: Debe coincidir con el formulario
+            tipo_asegurado = request.form['tipo_asegurado']
+            fecha_inicio = request.form['fecha_inicio']
+            fecha_termino = request.form['fecha_termino']
+            monto = float(request.form['monto'])
+
+            # Manejo del archivo adjunto
+            adjunto_poliza = None
+            if 'adjunto_poliza' in request.files:
+                file = request.files['adjunto_poliza']
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    adjunto_poliza = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("\\", "/")
+                    file.save(adjunto_poliza)
+
+            # Validar si el número de póliza ya existe
+            cursor.execute("SELECT 1 FROM Polizas WHERE Numero = %s", (numero,))
+            if cursor.fetchone():
+                flash("El número de póliza ya existe. Por favor, ingrese otro.", "error")
+                return redirect(url_for('agregar_poliza'))
+            
+            if fecha_inicio > fecha_termino:
+                flash("La fecha de inicio no puede ser posterior a la fecha de término.", "error")
+                return redirect(url_for('agregar_poliza'))
+
+            # Insertar en la base de datos
+            cursor.execute("""
+                INSERT INTO Polizas (Numero, TipoAsegurado, FechaInicio, FechaTermino, Monto, AdjuntoPoliza)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (numero, tipo_asegurado, fecha_inicio, fecha_termino, monto, adjunto_poliza))
+
+            conn.commit()
+            flash('Póliza agregada exitosamente.', 'success')
+
+        except Exception as e:
+            conn.rollback()
+            flash(f'Error al agregar la póliza: {e}', 'error')
+        finally:
+            cursor.close()
+            conn.close()
+
+        return redirect(url_for('listar_polizas'))
+
+    return render_template('add_polizas.html')
+
+@app.route('/edit_poliza/<int:numero>', methods=['GET', 'POST'])
+@login_required
+def editar_poliza(numero):
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -1077,33 +1160,55 @@ def polizas():
                     adjunto_poliza = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.save(adjunto_poliza)
 
-            # Insertar en la base de datos
+            # Actualizar en la base de datos
             cursor.execute("""
-                INSERT INTO Polizas (TipoAsegurado, FechaInicio, FechaTermino, Monto, AdjuntoPoliza)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (tipo_asegurado, fecha_inicio, fecha_termino, monto, adjunto_poliza))
+                UPDATE Polizas
+                SET TipoAsegurado = %s, FechaInicio = %s, FechaTermino = %s, Monto = %s, AdjuntoPoliza = %s
+                WHERE Numero = %s
+            """, (tipo_asegurado, fecha_inicio, fecha_termino, monto, adjunto_poliza, numero))
 
             conn.commit()
-            flash('Póliza agregada exitosamente.', 'success')
-
+            flash('Póliza actualizada exitosamente.', 'success')
         except Exception as e:
             conn.rollback()
-            flash(f'Error al agregar la póliza: {e}', 'error')
+            flash(f'Error al actualizar la póliza: {e}', 'error')
         finally:
             cursor.close()
             conn.close()
 
-        return redirect(url_for('polizas'))
+        return redirect(url_for('listar_polizas'))
 
-    # Consultar pólizas existentes
-    cursor.execute("SELECT * FROM Polizas ORDER BY Numero")
-    polizas = cursor.fetchall()
+    # Obtener datos de la póliza actual
+    cursor.execute("SELECT * FROM Polizas WHERE Numero = %s", (numero,))
+    poliza = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    return render_template('polizas.html', polizas=polizas)
+    if not poliza:
+        flash('La póliza no existe.', 'error')
+        return redirect(url_for('listar_polizas'))
 
+    return render_template('edit_polizas.html', poliza=poliza)
 
+@app.route('/delete_poliza/<int:numero>', methods=['POST'])
+@login_required
+def eliminar_poliza(numero):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Eliminar la póliza de la base de datos
+        cursor.execute("DELETE FROM Polizas WHERE Numero = %s", (numero,))
+        conn.commit()
+        flash('Póliza eliminada exitosamente.', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Error al eliminar la póliza: {e}', 'error')
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('listar_polizas'))
 
 
 # Ejecutar la aplicación
