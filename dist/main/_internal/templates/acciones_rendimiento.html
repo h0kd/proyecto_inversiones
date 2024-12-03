@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rendimiento de Acciones</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <h1>Rendimiento Total de Acciones</h1>
+    <div>{{ graph|safe }}</div>
+    <br />
+    <a href="/acciones">
+      <button>Volver al Listado de Acciones</button>
+    </a>
+    <!-- <a href="/">
+      <button>Volver al Inicio</button>
+    </a> -->
+  </body>
+</html>

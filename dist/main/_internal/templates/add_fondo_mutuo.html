@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregar Fondo Mutuo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body class="centered-form">
+    <form action="/add_fondo_mutuo" method="POST" enctype="multipart/form-data">
+      <h1>Agregar Fondo Mutuo</h1>
+      <label for="empresa">Empresa:</label>
+      <input
+        type="text"
+        id="empresa"
+        name="empresa"
+        required
+        style="text-transform: uppercase"
+      /><br /><br />
+
+      <label for="banco">Banco:</label>
+      <input
+        type="text"
+        id="banco"
+        name="banco"
+        required
+        style="text-transform: uppercase"
+      /><br /><br />
+
+      <label for="nombre_fondo">Nombre Fondo Mutuo:</label>
+      <input
+        type="text"
+        id="nombre_fondo"
+        name="nombre_fondo"
+        required
+        style="text-transform: uppercase"
+      /><br /><br />
+
+      <label for="monto_invertido">Monto Invertido:</label>
+      <input
+        type="number"
+        id="monto_invertido"
+        name="monto_invertido"
+        step="0.01"
+        required
+      />
+
+      <label for="monto_final">Monto Final:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="monto_final"
+        name="monto_final"
+        placeholder="Ingrese el monto final"
+      />
+      <br /><br />
+
+      <label for="riesgo">Riesgo:</label>
+      <select id="riesgo" name="riesgo" required>
+        <option value="Bajo">Bajo</option>
+        <option value="Medio">Medio</option>
+        <option value="Alto">Alto</option></select
+      ><br /><br />
+
+      <label for="fecha_inicio">Fecha de Inicio:</label>
+      <input
+        type="date"
+        id="fecha_inicio"
+        name="fecha_inicio"
+        required
+      /><br /><br />
+
+      <label for="fecha_termino">Fecha de Término:</label>
+      <input type="date" id="fecha_termino" name="fecha_termino" /><br /><br />
+
+      <label for="comprobante">Adjuntar Documento:</label>
+      <input
+        type="file"
+        id="comprobante"
+        name="comprobante"
+        accept=".pdf"
+      /><br /><br />
+
+      <button type="submit">Guardar Fondo Mutuo</button>
+      <button type="button" onclick="location.href='/fondos_mutuos'">
+        Volver
+      </button>
+    </form>
+  </body>
+</html>

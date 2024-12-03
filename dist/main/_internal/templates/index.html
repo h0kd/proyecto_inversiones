@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Total por Tipo de Inversión</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <!-- <h1>Bienvenido al Sistema de Facturas</h1> -->
+    <a href="/cambiar_contrasena">
+      <button class="btn btn-important">Cambiar contraseña</button>
+    </a>
+
+    <a href="/listado_facturas">
+      <button>Facturas</button>
+    </a>
+
+    <a href="/acciones">
+      <button>Acciones</button>
+    </a>
+
+    <a href="/deposito_a_plazo">
+      <button>Depósito a Plazo</button>
+    </a>
+
+    <a href="/fondos_mutuos">
+      <button>Fondos Mutuos</button>
+    </a>
+
+    <a href="/boletas_garantia">
+      <button>Boletas de Garantia</button>
+    </a>
+
+    <a href="/polizas">
+      <button>Pólizas de Seguro</button>
+    </a>
+
+    <h1>Total por Tipo de Inversión</h1>
+    <div>{{ graph|safe }}</div>
+  </body>
+</html>

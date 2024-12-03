@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boletas de Garantía</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Boletas de Garantía</h1>
+    <a href="/add_boleta_garantia"><button>Agregar Boleta</button></a>
+    <br /><br />
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=Numero&order={{ 'asc' if sort_by != 'Numero' or order == 'desc' else 'desc' }}"
+            >
+              Número
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Banco&order={{ 'asc' if sort_by != 'Banco' or order == 'desc' else 'desc' }}"
+            >
+              Banco
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Beneficiario&order={{ 'asc' if sort_by != 'Beneficiario' or order == 'desc' else 'desc' }}"
+            >
+              Beneficiario
+            </a>
+          </th>
+          <!-- <th>Glosa</th> -->
+          <th>
+            <a
+              href="?sort_by=Vencimiento&order={{ 'asc' if sort_by != 'Vencimiento' or order == 'desc' else 'desc' }}"
+            >
+              Vencimiento
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaEmision&order={{ 'asc' if sort_by != 'FechaEmision' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Emisión
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Moneda&order={{ 'asc' if sort_by != 'Moneda' or order == 'desc' else 'desc' }}"
+            >
+              Moneda
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Monto&order={{ 'asc' if sort_by != 'Monto' or order == 'desc' else 'desc' }}"
+            >
+              Monto
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Estado&order={{ 'asc' if sort_by != 'Estado' or order == 'desc' else 'desc' }}"
+            >
+              Estado
+            </a>
+          </th>
+          <th>Documento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for boleta in boletas %}
+        <tr>
+          <td>{{ boleta[0] }}</td>
+          <td>{{ boleta[1] }}</td>
+          <td>{{ boleta[2] }}</td>
+          <!-- <td>{{ boleta[3] }}</td> -->
+          <td>{{ boleta[3] }}</td>
+          <td>{{ boleta[4] }}</td>
+          <td>{{ boleta[5] }}</td>
+          <td>{{ "{:,.2f}".format(boleta[6]).replace(',', '.') }}</td>
+          <td>{{ boleta[7] }}</td>
+          <td>
+            {% if boleta[8] %}
+            <!-- Ajusta el índice según el orden de columnas -->
+            <a
+              href="{{ url_for('static', filename=boleta[8].replace('static/', '')) }}"
+              target="_blank"
+              class="view-file"
+            >
+              <i class="fa-solid fa-file-pdf"></i>
+            </a>
+            {% else %} Sin documento {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('edit_boleta_garantia', numero=boleta[0]) }}">
+              <button>Editar</button>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>

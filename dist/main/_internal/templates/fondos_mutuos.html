@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fondos Mutuos</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Fondos Mutuos</h1>
+    <a href="/add_fondo_mutuo"><button>Agregar Fondo Mutuo</button></a>
+    <br /><br />
+
+    <form action="/fondos_mutuos" method="get" style="margin-bottom: 20px">
+      <label for="search">Buscar por empresa:</label>
+      <input
+        type="text"
+        id="search"
+        name="search"
+        placeholder="Ingrese el nombre de la empresa"
+        value="{{ search_query }}"
+      />
+      <button type="submit">Buscar</button>
+    </form>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=ID_Fondo&order={{ 'asc' if sort_by != 'ID_Fondo' or order == 'desc' else 'desc' }}"
+            >
+              ID Fondo
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Nombre&order={{ 'asc' if sort_by != 'Nombre' or order == 'desc' else 'desc' }}"
+            >
+              Nombre
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Empresa&order={{ 'asc' if sort_by != 'Empresa' or order == 'desc' else 'desc' }}"
+            >
+              Empresa
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Banco&order={{ 'asc' if sort_by != 'Banco' or order == 'desc' else 'desc' }}"
+            >
+              Banco
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=TipoRiesgo&order={{ 'asc' if sort_by != 'TipoRiesgo' or order == 'desc' else 'desc' }}"
+            >
+              Riesgo
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=MontoInvertido&order={{ 'asc' if sort_by != 'MontoInvertido' or order == 'desc' else 'desc' }}"
+            >
+              Monto Invertido
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=MontoFinal&order={{ 'asc' if sort_by != 'MontoFinal' or order == 'desc' else 'desc' }}"
+            >
+              Monto Final
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaInicio&order={{ 'asc' if sort_by != 'FechaInicio' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Inicio
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaTermino&order={{ 'asc' if sort_by != 'FechaTermino' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Término
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Rentabilidad&order={{ 'asc' if sort_by != 'Rentabilidad' or order == 'desc' else 'desc' }}"
+            >
+              Rentabilidad
+            </a>
+          </th>
+          <th>Comprobante</th>
+          <th>Edicion</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for fondo in fondos %}
+        <tr>
+          <td>{{ fondo[0] }}</td>
+          <!-- ID Fondo -->
+          <td>{{ fondo[1] }}</td>
+          <!-- Nombre -->
+          <td>{{ fondo[2] }}</td>
+          <!-- Empresa -->
+          <td>{{ fondo[3] }}</td>
+          <!-- Banco -->
+          <td>{{ fondo[4] if fondo[4] is not none else 'Sin definir' }}</td>
+          <!-- Riesgo -->
+          <td>{{ "{:,.2f}".format(fondo[5]).replace(',', '.') }}</td>
+          <!-- Monto Invertido -->
+          <td>
+            {% if fondo[6] is not none %} {{
+            "{:,.2f}".format(fondo[6]).replace(',', '.') }} {% else %} No
+            definido {% endif %}
+          </td>
+          <!-- Monto Final -->
+          <td>{{ fondo[7] }}</td>
+          <!-- Fecha Inicio -->
+          <td>{{ fondo[8] if fondo[8] is not none else 'No definida' }}</td>
+          <!-- Fecha Término -->
+          <td>
+            {% if fondo[9] is not none %} {{
+            "{:,.2f}".format(fondo[9]).replace(',', '.') }} % {% else %} No
+            calculada {% endif %}
+          </td>
+          <!-- Rentabilidad -->
+          <td>
+            {% if fondo[10] %}
+            <a
+              href="{{ url_for('static', filename=fondo[10].replace('static/', '')) }}"
+              target="_blank"
+              class="view-file"
+            >
+              <i class="fa-solid fa-file-pdf"></i>
+            </a>
+            {% else %} Sin comprobante {% endif %}
+          </td>
+          <!-- Comprobante -->
+          <td>
+            <a href="{{ url_for('edit_fondo_mutuo', id_fondo=fondo[0]) }}">
+              <button>Editar</button>
+            </a>
+          </td>
+          <!-- Botón para editar -->
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>

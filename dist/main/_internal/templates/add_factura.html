@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregar Factura</title>
+    <script>
+      // Calcular SubTotal automáticamente
+      function calcularSubtotal() {
+        const cantidad =
+          parseFloat(document.getElementById("cantidad").value) || 0;
+        const precioUnitario =
+          parseFloat(document.getElementById("precio_unitario").value) || 0;
+        const subtotal = cantidad * precioUnitario;
+        document.getElementById("subtotal").value = subtotal.toFixed(2);
+      }
+    </script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body class="centered-form">
+    <form action="/add_factura" method="POST" enctype="multipart/form-data">
+      <h1>Agregar Factura</h1>
+      <label for="numero_factura">Número de Factura:</label>
+      <input
+        type="text"
+        id="numero_factura"
+        name="numero_factura"
+        required
+        pattern="\d+"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+      />
+      <span style="font-size: 12px; color: gray"
+        >Solo números, sin puntos ni guiones.</span
+      ><br /><br />
+
+      <label for="rut_entidad">RUT Entidad:</label>
+      <input
+        type="text"
+        id="rut_entidad"
+        name="rut_entidad"
+        required
+        pattern="\d+"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+      />
+      <span style="font-size: 12px; color: gray"
+        >Solo números, sin puntos ni guiones.</span
+      ><br /><br />
+
+      <label for="nombre_entidad">Nombre de la Entidad:</label>
+      <input
+        type="text"
+        id="nombre_entidad"
+        name="nombre_entidad"
+        required
+        style="text-transform: uppercase"
+        oninput="this.value = this.value.toUpperCase();"
+      /><br /><br />
+
+      <label for="nombre_activo">Nombre del Activo:</label>
+      <input
+        type="text"
+        id="nombre_activo"
+        name="nombre_activo"
+        required
+        style="text-transform: uppercase"
+        oninput="this.value = this.value.toUpperCase();"
+      /><br /><br />
+
+      <label for="tipo_entidad">Tipo de Entidad:</label>
+      <select id="tipo_entidad" name="tipo_entidad" required>
+        <option value="Banco">Banco</option>
+        <option value="Corredora">Corredora</option>
+        <option value="Compañía de Seguros">Compañía de Seguros</option>
+        <option value="Cliente">Cliente</option>
+        <option value="Empresa">Empresa</option></select
+      ><br /><br />
+
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" name="fecha" required /><br /><br />
+
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" name="tipo" required>
+        <option value="Compra">Compra</option>
+        <option value="Venta">Venta</option></select
+      ><br /><br />
+
+      <label for="cantidad">Cantidad:</label>
+      <input
+        type="number"
+        id="cantidad"
+        name="cantidad"
+        required
+        oninput="calcularSubtotal()"
+      /><br /><br />
+
+      <label for="precio_unitario">Precio Unitario:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="precio_unitario"
+        name="precio_unitario"
+        required
+        oninput="calcularSubtotal()"
+      /><br /><br />
+
+      <label for="subtotal">Sub Total:</label>
+      <input type="text" id="subtotal" name="subtotal" readonly /><br /><br />
+
+      <label for="valor_total">Valor Total:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="valor_total"
+        name="valor_total"
+        required
+      /><br /><br />
+
+      <label for="comision">Comisión:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="comision"
+        name="comision"
+      /><br /><br />
+
+      <label for="gasto">Gasto:</label>
+      <input type="number" step="0.01" id="gasto" name="gasto" /><br /><br />
+
+      <label for="archivo_factura">Adjuntar Factura (PDF):</label>
+      <input
+        type="file"
+        id="archivo_factura"
+        name="archivo_factura"
+        accept=".pdf"
+        required
+      /><br /><br />
+
+      <button type="submit">Agregar Factura</button>
+      <button type="button" onclick="location.href='/listado_facturas'">
+        Volver
+      </button>
+    </form>
+  </body>
+</html>

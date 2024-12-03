@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listado de Facturas</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <h1>Listado de Facturas</h1>
+
+    <!-- Tabla Principal -->
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=NumeroFactura&order={{ 'asc' if sort_by != 'NumeroFactura' or order == 'desc' else 'desc' }}"
+              >N° Factura</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=NombreEntidad&order={{ 'asc' if sort_by != 'NombreEntidad' or order == 'desc' else 'desc' }}"
+              >Nombre Entidad</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=NombreActivo&order={{ 'asc' if sort_by != 'NombreActivo' or order == 'desc' else 'desc' }}"
+              >Nombre Activo</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Tipo&order={{ 'asc' if sort_by != 'Tipo' or order == 'desc' else 'desc' }}"
+              >Tipo</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Fecha&order={{ 'asc' if sort_by != 'Fecha' or order == 'desc' else 'desc' }}"
+              >Fecha</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Cantidad&order={{ 'asc' if sort_by != 'Cantidad' or order == 'desc' else 'desc' }}"
+              >Cantidad</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=PrecioUnitario&order={{ 'asc' if sort_by != 'PrecioUnitario' or order == 'desc' else 'desc' }}"
+              >Precio Unitario</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=SubTotal&order={{ 'asc' if sort_by != 'SubTotal' or order == 'desc' else 'desc' }}"
+              >Sub Total</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Valor&order={{ 'asc' if sort_by != 'Valor' or order == 'desc' else 'desc' }}"
+              >Valor Total</a
+            >
+          </th>
+          <th>Factura</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for factura in facturas %}
+        <tr>
+          <td>{{ factura[0] }}</td>
+          <td>{{ factura[1] }}</td>
+          <td>{{ factura[2] }}</td>
+          <td>{{ factura[3] }}</td>
+          <td>{{ factura[4] }}</td>
+          <td>{{ factura[5] }}</td>
+          <td>{{ "{:,.2f}".format(factura[6]).replace(',', '.') }}</td>
+          <td>{{ "{:,.0f}".format(factura[7]).replace(',', '.') }}</td>
+          <td>{{ "{:,.0f}".format(factura[8]).replace(',', '.') }}</td>
+          <td>
+            {% if factura[9] %}
+            <a
+              href="{{ factura[9] | replace('\\', '/') }}"
+              target="_blank"
+              class="view-file"
+              title="Abrir archivo PDF"
+              ><i class="fa-solid fa-file-pdf"></i
+            ></a>
+            {% else %} <span class="no-file">Sin archivo</span> {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br />
+    <a href="/">
+      <button>Volver al inicio</button>
+    </a>
+    <a href="/add_factura">
+      <button>Agregar Factura</button>
+    </a>
+  </body>
+</html>

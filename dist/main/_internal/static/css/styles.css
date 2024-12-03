@@ -1,0 +1,230 @@
+/* Estilo para los enlaces en los encabezados de la tabla */
+th a {
+  color: black; /* Cambia a cualquier color que prefieras */
+  text-decoration: none; /* Elimina el subrayado */
+}
+
+th a:hover {
+  color: darkblue; /* Color al pasar el mouse */
+  text-decoration: underline; /* Subrayado al pasar el mouse */
+}
+
+th a:visited {
+  color: black; /* Evita el color morado de enlaces visitados */
+}
+
+/* Opcional: Agrega más estilos para la tabla */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+td {
+  font-family: "Roboto", sans-serif; /* Aplica Roboto a las celdas */
+  font-size: 14px; /* Ajusta el tamaño de fuente */
+  color: #333; /* Color del texto */
+  padding: 8px 10px; /* Espaciado interno */
+  border-bottom: 1px solid #ddd; /* Línea de separación entre filas */
+  text-align: center; /* Alineación del texto */
+  vertical-align: middle;
+}
+
+th {
+  font-family: "Roboto", sans-serif;
+  font-size: 1em;
+  font-weight: 500;
+  color: #555;
+  text-align: left;
+  padding: 10px;
+  background-color: #f8f8f8; /* Fondo claro */
+  border-bottom: 2px solid #ddd;
+}
+
+th:hover {
+  background-color: #e0e0e0; /* Fondo más oscuro al pasar el mouse */
+}
+
+button {
+  background-color: #007bff; /* Azul */
+  color: white; /* Texto en blanco */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px; /* Tamaño de fuente */
+  margin: 10px 5px; /* Margen alrededor del botón */
+  cursor: pointer; /* Cambia el cursor a puntero */
+  border-radius: 5px; /* Bordes redondeados */
+  transition: background-color 0.3s; /* Animación suave al pasar el mouse */
+}
+
+button:hover {
+  background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
+}
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-size: 2.5em; /* Ajusta el tamaño */
+  font-weight: 700; /* Opcional: negrita */
+  color: #333; /* Cambia a tu color preferido */
+}
+
+h3 {
+  font-family: "Lato", sans-serif;
+  font-size: 1.8em;
+  font-weight: 400;
+  color: #555; /* Un color ligeramente más suave */
+}
+
+/* Ícono de archivo PDF */
+.view-file i {
+  color: #ff0000; /* Rojo para el ícono PDF */
+  font-size: 1.5em; /* Ajustar tamaño del ícono */
+  margin-right: 5px; /* Separación entre ícono y texto (si lo hay) */
+}
+
+/* Texto cuando no hay archivo */
+.no-file {
+  color: #999; /* Color gris para texto */
+  font-style: italic; /* Texto en cursiva */
+}
+
+/* Estilo para el texto "Sin archivo" */
+span.no-file {
+  color: #ff0000; /* Rojo */
+  font-style: italic;
+  font-weight: bold;
+}
+
+label {
+  font-family: "Roboto", sans-serif; /* Fuente Roboto */
+  font-size: 14px; /* Ajusta el tamaño */
+  color: #333; /* Color del texto */
+  font-weight: 400; /* Peso normal */
+  margin-bottom: 5px; /* Espacio debajo del label */
+  display: block; /* Asegura que el label esté en su propia línea */
+}
+
+.centered-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+.centered-form form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+/* Estilo del contenedor de búsqueda */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Estilo del formulario */
+.search-bar form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estilo del input */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: "Roboto", sans-serif;
+}
+
+.search-bar form {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-bar label {
+  font-weight: bold;
+  color: #333;
+}
+
+.search-bar input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-bar button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #0056b3;
+}
+
+/* Aplica el estilo a todas las etiquetas legend */
+legend {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333; /* Ajusta el color si es necesario */
+}
+
+/* Si solo deseas aplicarlo a esta sección, usa una clase */
+fieldset.renovacion legend {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #555; /* Otro color opcional */
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Color rojo */
+  color: #fff; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px; /* Tamaño de fuente */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Rojo más oscuro al pasar el cursor */
+}
+
+.btn-important {
+  background-color: #ff4800; /* Color rojo */
+  color: #fff; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px; /* Tamaño de fuente */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}

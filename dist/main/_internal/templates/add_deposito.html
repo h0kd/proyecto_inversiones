@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregar Depósito a Plazo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <script src="{{ url_for('static', filename='js/formularioDeposito.js') }}"></script>
+  </head>
+  <body class="centered-form">
+    <form action="/add_deposito" method="POST" enctype="multipart/form-data">
+      <h1>Agregar Depósito a Plazo</h1>
+      <!-- Número de Depósito -->
+      <label for="numero_deposito">Número de Depósito:</label>
+      <input
+        type="text"
+        id="numero_deposito"
+        name="numero_deposito"
+        required
+      /><br /><br />
+
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" name="tipo" onchange="toggleFields()" required>
+        <option value="Renovable">Renovable</option>
+        <option value="Fijo">Fijo</option></select
+      ><br /><br />
+
+      <label for="banco">Banco:</label>
+      <input
+        type="text"
+        id="banco"
+        name="banco"
+        oninput="this.value = this.value.toUpperCase();"
+        required
+      /><br /><br />
+
+      <label for="tipo_beneficiario">Tipo de Beneficiario:</label>
+      <select id="tipo_beneficiario" name="tipo_beneficiario" required>
+        <option value="">Seleccione...</option>
+        <option value="empresa">Empresa</option>
+        <option value="cliente">Cliente</option>
+      </select>
+      <br /><br />
+
+      <label for="nombre_beneficiario">Nombre del Beneficiario:</label>
+      <input
+        type="text"
+        id="nombre_beneficiario"
+        name="nombre_beneficiario"
+        oninput="this.value = this.value.toUpperCase();"
+        placeholder="Nombre del beneficiario"
+        required
+      />
+
+      <label for="rut_beneficiario">RUT del Beneficiario:</label>
+      <input
+        type="text"
+        id="rut_beneficiario"
+        name="rut_beneficiario"
+        placeholder="RUT del beneficiario"
+        required
+      />
+
+      <label for="monto">Capital Invertido:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="monto"
+        name="monto"
+        oninput="updateRenovacionFields()"
+        required
+      /><br /><br />
+
+      <label for="monto">Moneda:</label>
+      <input
+        type="text"
+        id="moneda"
+        name="moneda"
+        value="CLP"
+        required
+      /><br /><br />
+
+      <!-- <label for="empresa">Empresa:</label>
+      <input
+        type="text"
+        id="empresa"
+        name="empresa"
+        oninput="this.value = this.value.toUpperCase();"
+        required
+        /><br /><br /> -->
+
+      <label for="fecha_emision">Fecha de Emisión:</label>
+      <input
+        type="date"
+        id="fecha_emision"
+        name="fecha_emision"
+        onchange="updateRenovacionFields(); calculatePlazoRenovacion()"
+        required
+      /><br /><br />
+
+      <label for="tasa_interes">Tasa de Interés:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="tasa_interes"
+        name="tasa_interes"
+        required
+      /><br /><br />
+
+      <!-- <label for="plazo">Plazo:</label>
+      <input type="number" id="plazo" name="plazo" required /><br /><br /> -->
+
+      <label for="interes_ganado">Interes Ganado:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="interes_ganado"
+        name="interes_ganado"
+        required
+      /><br /><br />
+
+      <label for="reajuste_ganado">Reajuste Ganado:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="reajuste_ganado"
+        name="reajuste_ganado"
+        placeholder="Ingrese el reajuste ganado (opcional)"
+      />
+      <br /><br />
+
+      <label for="fecha_vencimiento">Fecha de Vencimiento:</label>
+      <input
+        type="date"
+        id="fecha_vencimiento"
+        name="fecha_vencimiento"
+        onchange="calculatePlazoRenovacion()"
+        required
+      /><br /><br />
+
+      <label for="total_deposito">Total a Pagar:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="total_deposito"
+        name="total_deposito"
+        required
+      /><br /><br />
+
+      <!-- <div id="fecha_renovacion_field" style="display: none">
+        <label for="fecha_renovacion">Fecha de Renovación:</label>
+        <input
+          type="date"
+          id="fecha_renovacion"
+          name="fecha_renovacion"
+        /><br /><br />
+      </div>
+
+      <div id="fecha_abono_field" style="display: none">
+        <label for="fecha_abono">Fecha de Abono:</label>
+        <input type="date" id="fecha_abono" name="fecha_abono" /><br /><br />
+      </div> -->
+
+      <label for="comprobante">Comprobante:</label>
+      <input
+        type="file"
+        id="comprobante"
+        name="comprobante"
+        accept=".pdf"
+      /><br /><br />
+
+      <!-- Nueva sección: Condiciones de Renovación -->
+      <fieldset
+        id="renovacion_fieldset"
+        class="renovacion"
+        style="display: none; border: 1px solid #ccc; padding: 10px"
+      >
+        <legend>Condiciones de Renovación</legend>
+
+        <label for="capital_renovacion">Capital a Invertir:</label>
+        <input
+          type="number"
+          step="0.01"
+          id="capital_renovacion"
+          name="capital_renovacion"
+        /><br /><br />
+
+        <label for="fecha_emision_renovacion">Fecha de Emisión:</label>
+        <input
+          type="date"
+          id="fecha_emision_renovacion"
+          name="fecha_emision_renovacion"
+        /><br /><br />
+
+        <label for="tasa_interes_renovacion">Tasa de Interés:</label>
+        <input
+          type="number"
+          step="0.01"
+          id="tasa_interes_renovacion"
+          name="tasa_interes_renovacion"
+        /><br /><br />
+
+        <label for="plazo_renovacion">Plazo (en días):</label>
+        <input
+          type="number"
+          id="plazo_renovacion"
+          name="plazo_renovacion"
+          readonly
+        /><br /><br />
+
+        <label for="tasa_periodo">Tasa de Interés del Período:</label>
+        <input
+          type="number"
+          step="0.001"
+          id="tasa_periodo"
+          name="tasa_periodo"
+        /><br /><br />
+
+        <label for="fecha_vencimiento_renovacion">Fecha de Vencimiento:</label>
+        <input
+          type="date"
+          id="fecha_vencimiento_renovacion"
+          name="fecha_vencimiento_renovacion"
+        /><br /><br />
+
+        <label for="total_pagar_renovacion">Total a Pagar:</label>
+        <input
+          type="number"
+          step="0.01"
+          id="total_pagar_renovacion"
+          name="total_pagar_renovacion"
+        /><br /><br />
+      </fieldset>
+
+      <!-- Botones -->
+      <button type="submit">Guardar Depósito</button>
+      <button type="button" onclick="location.href='/deposito_a_plazo'">
+        Volver
+      </button>
+    </form>
+
+    <br />
+  </body>
+</html>

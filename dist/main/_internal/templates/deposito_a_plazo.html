@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Depósito a Plazo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <script src="{{ url_for('static', filename='js/deleteAlert.js') }}"></script>
+  </head>
+  <body>
+    <h1>Depósito a Plazo</h1>
+
+    <!-- Botón para agregar nuevo depósito -->
+    <a href="/add_deposito">
+      <button style="margin-bottom: 20px">Agregar Depósito a Plazo</button>
+    </a>
+
+    <!-- Tabla de depósitos -->
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=ID_Deposito&order={{ 'asc' if sort_by != 'ID_Deposito' or order == 'desc' else 'desc' }}"
+              >N° Depósito</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Empresa&order={{ 'asc' if sort_by != 'Empresa' or order == 'desc' else 'desc' }}"
+              >Beneficiario</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Banco&order={{ 'asc' if sort_by != 'Banco' or order == 'desc' else 'desc' }}"
+              >Banco</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaEmision&order={{ 'asc' if sort_by != 'FechaEmision' or order == 'desc' else 'desc' }}"
+              >Fecha Emisión</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaVencimiento&order={{ 'asc' if sort_by != 'FechaVencimiento' or order == 'desc' else 'desc' }}"
+              >Fecha Vencimiento</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=Moneda&order={{ 'asc' if sort_by != 'Moneda' or order == 'desc' else 'desc' }}"
+              >Moneda</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=MontoInicial&order={{ 'asc' if sort_by != 'MontoInicial' or order == 'desc' else 'desc' }}"
+              >Monto Inicial</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=TipoDeposito&order={{ 'asc' if sort_by != 'TipoDeposito' or order == 'desc' else 'desc' }}"
+              >Tipo Depósito</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=CapitalRenovacion&order={{ 'asc' if sort_by != 'CapitalRenovacion' or order == 'desc' else 'desc' }}"
+              >Capital Renovación</a
+            >
+          </th>
+          <th>
+            <a
+              href="?sort_by=PlazoRenovacion&order={{ 'asc' if sort_by != 'PlazoRenovacion' or order == 'desc' else 'desc' }}"
+              >Plazo Renovación</a
+            >
+          </th>
+          <th>Comprobante</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for deposito in depositos %}
+        <tr>
+          <td>{{ deposito[0] }}</td>
+          <td>{{ deposito[1] }}</td>
+          <td>{{ deposito[2] }}</td>
+          <td>{{ deposito[3] }}</td>
+          <td>{{ deposito[4] }}</td>
+          <td>{{ deposito[5] }}</td>
+          <td>{{ "{:,.2f}".format(deposito[6]).replace(',', '.') }}</td>
+          <td>{{ deposito[8] }}</td>
+          <td>{{ "{:,.2f}".format(deposito[9] or 0).replace(',', '.') }}</td>
+          <td>{{ deposito[10] }}</td>
+          <td>
+            {% if deposito[11] %}
+            <a
+              href="{{ url_for('static', filename=deposito[11].replace('static/', '')) }}"
+              target="_blank"
+              class="view-file"
+              title="Abrir archivo PDF"
+              ><i class="fa-solid fa-file-pdf"></i
+            ></a>
+            {% else %} Sin comprobante {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('edit_deposito', id_deposito=deposito[0]) }}">
+              <button>Editar</button>
+            </a>
+            <form
+              action="/delete_deposito/{{ deposito[0] }}"
+              method="POST"
+              style="display: inline"
+              onsubmit="return confirmDelete(event);"
+            >
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>

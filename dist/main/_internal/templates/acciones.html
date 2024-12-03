@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Acciones</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Listado de Acciones</h1>
+
+    <!-- Formulario de Búsqueda -->
+    <div class="search-bar">
+      <form method="get" action="/acciones">
+        <label for="search_factura">Buscar por N° Factura:</label>
+        <input
+          type="text"
+          id="search_factura"
+          name="search_factura"
+          value="{{ search_factura }}"
+          placeholder="Número de Factura"
+        />
+
+        <label for="search_ticker">Buscar por Ticker:</label>
+        <input
+          type="text"
+          id="search_ticker"
+          name="search_ticker"
+          value="{{ search_ticker }}"
+          placeholder="Ticker"
+        />
+
+        <button type="submit">Buscar</button>
+      </form>
+    </div>
+
+    <a href="/acciones_rendimiento">
+      <button>Ver Gráfico de Rendimiento</button>
+    </a>
+
+    <!-- Mostrar Totales -->
+    <div>
+      <h3>Totales de Acciones</h3>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Total de Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for total in totales %}
+          <tr>
+            <td>{{ total[0] }}</td>
+            <!-- Compra o Venta -->
+            <td>{{ total[1] }}</td>
+            <!-- Total de Acciones -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de Acciones -->
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=NumeroFactura&order={{ 'asc' if sort_by != 'NumeroFactura' or order == 'desc' else 'desc' }}"
+            >
+              N° Factura
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Corredora&order={{ 'asc' if sort_by != 'Corredora' or order == 'desc' else 'desc' }}"
+            >
+              Corredora
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Fecha&order={{ 'asc' if sort_by != 'Fecha' or order == 'desc' else 'desc' }}"
+            >
+              Fecha
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Tipo&order={{ 'asc' if sort_by != 'Tipo' or order == 'desc' else 'desc' }}"
+            >
+              Tipo
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Ticker&order={{ 'asc' if sort_by != 'Ticker' or order == 'desc' else 'desc' }}"
+            >
+              Ticker
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Cantidad&order={{ 'asc' if sort_by != 'Cantidad' or order == 'desc' else 'desc' }}"
+            >
+              Cantidad
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=PrecioUnitario&order={{ 'asc' if sort_by != 'PrecioUnitario' or order == 'desc' else 'desc' }}"
+            >
+              Precio Unitario
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Comision&order={{ 'asc' if sort_by != 'Comision' or order == 'desc' else 'desc' }}"
+            >
+              Comisiones
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=CostoTotal&order={{ 'asc' if sort_by != 'CostoTotal' or order == 'desc' else 'desc' }}"
+            >
+              Costo Total
+            </a>
+          </th>
+          <th>Factura</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for accion in acciones %}
+        <tr>
+          <td>{{ accion[0] }}</td>
+          <td>{{ accion[1] }}</td>
+          <td>{{ accion[2] }}</td>
+          <td>{{ accion[3] }}</td>
+          <td>{{ accion[4] }}</td>
+          <td>{{ accion[5] }}</td>
+          <td>{{ "{:,.2f}".format(accion[6]).replace(',', '.') }}</td>
+          <td>{{ "{:,.2f}".format(accion[7] or 0).replace(',', '.') }}</td>
+          <td>{{ "{:,.2f}".format(accion[8]).replace(',', '.') }}</td>
+          <td>
+            {% if accion[9] %}
+            <a
+              href="{{ accion[9] | replace('\\', '/') }}"
+              target="_blank"
+              class="view-file"
+            >
+              <i class="fa-solid fa-file-pdf"></i>
+            </a>
+            {% else %}
+            <span class="no-file">Sin archivo</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br />
+    <a href="/"><button>Volver al Inicio</button></a>
+  </body>
+</html>
