@@ -70,6 +70,8 @@ def index():
 
     return render_template('index.html', graph=graph_html)
 
+# desde aca debo cambiar todo de lugar
+
 @app.route('/add_factura', methods=['GET', 'POST'])
 @login_required
 def add_factura():
