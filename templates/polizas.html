@@ -30,11 +30,41 @@
     <table border="1" cellpadding="5" cellspacing="0">
       <thead>
         <tr>
-          <th>Número</th>
-          <th>Tipo Asegurado</th>
-          <th>Fecha Inicio</th>
-          <th>Fecha Término</th>
-          <th>Monto</th>
+          <th>
+            <a
+              href="?sort_by=Numero&order={{ 'asc' if sort_by != 'Numero' or order == 'desc' else 'desc' }}"
+            >
+              Número
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=TipoAsegurado&order={{ 'asc' if sort_by != 'TipoAsegurado' or order == 'desc' else 'desc' }}"
+            >
+              Tipo Asegurado
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaInicio&order={{ 'asc' if sort_by != 'FechaInicio' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Inicio
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaTermino&order={{ 'asc' if sort_by != 'FechaTermino' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Término
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Monto&order={{ 'asc' if sort_by != 'Monto' or order == 'desc' else 'desc' }}"
+            >
+              Monto
+            </a>
+          </th>
           <th>Adjunto</th>
           <th>Acciones</th>
         </tr>
@@ -74,6 +104,7 @@
         {% endfor %}
       </tbody>
     </table>
+
     <a href="/"><button>Volver al inicio</button></a>
   </body>
 </html>

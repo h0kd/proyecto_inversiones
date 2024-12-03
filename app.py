@@ -1074,14 +1074,26 @@ def listar_polizas():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Consultar pólizas existentes
-    cursor.execute("SELECT * FROM Polizas ORDER BY Numero")
+    # Obtener parámetros de ordenación desde la URL
+    sort_by = request.args.get('sort_by', 'Numero')  # Columna por defecto: 'Numero'
+    order = request.args.get('order', 'asc')  # Orden por defecto: ascendente
+
+    # Validar columnas permitidas para evitar SQL injection
+    valid_columns = ['Numero', 'TipoAsegurado', 'FechaInicio', 'FechaTermino', 'Monto']
+    if sort_by not in valid_columns:
+        sort_by = 'Numero'
+    if order not in ['asc', 'desc']:
+        order = 'asc'
+
+    # Consultar pólizas existentes con orden dinámico
+    query = f"SELECT * FROM Polizas ORDER BY {sort_by} {order}"
+    cursor.execute(query)
     polizas = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return render_template('polizas.html', polizas=polizas)
+    return render_template('polizas.html', polizas=polizas, sort_by=sort_by, order=order)
 
 @app.route('/add_poliza', methods=['GET', 'POST'])
 @login_required
