@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Factura</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="centered-form">
+    <form method="POST">
+      <h1>Editar Factura</h1>
+      <label for="numero_actual">Número Actual de Factura:</label>
+      <input
+        type="text"
+        id="numero_actual"
+        name="numero_actual"
+        value="{{ factura[0] }}"
+        readonly
+      /><br /><br />
+
+      <label for="nuevo_numero">Nuevo Número de Factura:</label>
+      <input
+        type="text"
+        id="nuevo_numero"
+        name="nuevo_numero"
+        value="{{ factura[0] }}"
+        required
+        pattern="\d+"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+      /><br /><br />
+
+      <label for="nombre_entidad">Nombre de la Entidad:</label>
+      <input
+        type="text"
+        id="nombre_entidad"
+        name="nombre_entidad"
+        value="{{ entidad[1] if entidad else '' }}"
+        required
+        style="text-transform: uppercase"
+        oninput="this.value = this.value.toUpperCase();"
+      /><br /><br />
+
+      <label for="nombre_activo">Nombre Activo:</label>
+      <input
+        type="text"
+        id="nombre_activo"
+        name="nombre_activo"
+        value="{{ factura[1] }}"
+        required
+        style="text-transform: uppercase"
+        oninput="this.value = this.value.toUpperCase();"
+      /><br /><br />
+
+      <button type="submit">Guardar Cambios</button>
+      <button type="button" onclick="location.href='/listado_facturas'">
+        Cancelar
+      </button>
+    </form>
+  </body>
+</html>

@@ -199,6 +199,110 @@ def listado_facturas():
 
     return render_template('listado_facturas.html', facturas=facturas, sort_by=sort_by, order=order)
 
+@app.route('/edit_factura/<int:numero_factura>', methods=['GET', 'POST'])
+@login_required
+def editar_factura(numero_factura):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        if request.method == 'POST':
+            try:
+                # Obtener datos del formulario
+                print("Datos recibidos del formulario:", request.form)  # Debug
+                nuevo_numero_factura = request.form['nuevo_numero']
+                nombre_entidad = request.form['nombre_entidad']
+                nombre_activo = request.form['nombre_activo']
+
+                # Validar si el nuevo número de factura ya existe
+                if str(numero_factura) != nuevo_numero_factura:
+                    cursor.execute("SELECT 1 FROM Facturas WHERE NumeroFactura = %s", (nuevo_numero_factura,))
+                    if cursor.fetchone():
+                        flash("El nuevo número de factura ya existe. Por favor, elige otro.", "error")
+                        return redirect(url_for('editar_factura', numero_factura=numero_factura))
+
+                # Actualizar entidad o entidad comercial
+                cursor.execute("SELECT ID_Corredora FROM Facturas WHERE NumeroFactura = %s", (numero_factura,))
+                id_entidad = cursor.fetchone()[0]
+
+                cursor.execute("""
+                    UPDATE Entidad
+                    SET Nombre = %s
+                    WHERE ID_Entidad = %s
+                """, (nombre_entidad, id_entidad))
+
+                # Actualizar la factura (incluyendo Nombre Activo)
+                cursor.execute("""
+                    UPDATE Facturas
+                    SET NumeroFactura = %s, NombreActivo = %s
+                    WHERE NumeroFactura = %s
+                """, (nuevo_numero_factura, nombre_activo, numero_factura))
+
+                if cursor.rowcount == 0:
+                    flash("No se pudo actualizar la factura. Verifica los datos.", "error")
+                    conn.rollback()
+                    return redirect(url_for('editar_factura', numero_factura=numero_factura))
+
+                conn.commit()
+                flash("Factura actualizada exitosamente.", "success")
+                return redirect(url_for('listado_facturas'))
+            except Exception as e:
+                conn.rollback()
+                flash(f"Error al actualizar la factura: {e}", "error")
+        else:
+            # Obtener información de la factura
+            cursor.execute("SELECT NumeroFactura, NombreActivo FROM Facturas WHERE NumeroFactura = %s", (numero_factura,))
+            factura = cursor.fetchone()
+
+            cursor.execute("""
+                SELECT e.Rut, e.Nombre, e.TipoEntidad
+                FROM Facturas f
+                JOIN Entidad e ON f.ID_Corredora = e.ID_Entidad
+                WHERE f.NumeroFactura = %s
+            """, (numero_factura,))
+            entidad = cursor.fetchone()
+
+            if not entidad:
+                cursor.execute("""
+                    SELECT ec.Rut, ec.Nombre, ec.TipoEntidad
+                    FROM Facturas f
+                    JOIN EntidadComercial ec ON f.ID_Corredora = ec.ID_Entidad
+                    WHERE f.NumeroFactura = %s
+                """, (numero_factura,))
+                entidad = cursor.fetchone()
+
+            return render_template('edit_factura.html', factura=factura, entidad=entidad)
+
+    finally:
+        # Asegurar el cierre de conexión
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/eliminar_factura/<int:numero_factura>', methods=['POST', 'GET'])
+@login_required
+def eliminar_factura(numero_factura):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Eliminar la factura
+    cursor.execute("DELETE FROM Facturas WHERE NumeroFactura = %s", (numero_factura,))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('listado_facturas'))
+
 
 # @app.route('/create_user', methods=['GET'])
 # def create_user():
