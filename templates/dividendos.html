@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial de Dividendos</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.png') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Historial de Dividendos</h1>
+
+    <!-- Botón para agregar un nuevo dividendo -->
+    <button onclick="location.href='/dividendos/add/{{ id_accion }}'">
+      Agregar Dividendo
+    </button>
+
+    <br /><br />
+
+    <!-- Tabla de dividendos -->
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>
+            <a
+              href="?sort_by=ID_Dividendo&order={{ 'asc' if sort_by != 'ID_Dividendo' or order == 'desc' else 'desc' }}"
+            >
+              ID Dividendo
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Nombre&order={{ 'asc' if sort_by != 'Nombre' or order == 'desc' else 'desc' }}"
+            >
+              Nombre
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaCierre&order={{ 'asc' if sort_by != 'FechaCierre' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Cierre
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=FechaPago&order={{ 'asc' if sort_by != 'FechaPago' or order == 'desc' else 'desc' }}"
+            >
+              Fecha Pago
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=ValorPorAccion&order={{ 'asc' if sort_by != 'ValorPorAccion' or order == 'desc' else 'desc' }}"
+            >
+              Valor por Acción
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Moneda&order={{ 'asc' if sort_by != 'Moneda' or order == 'desc' else 'desc' }}"
+            >
+              Moneda
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=ValorTotal&order={{ 'asc' if sort_by != 'ValorTotal' or order == 'desc' else 'desc' }}"
+            >
+              Valor Total
+            </a>
+          </th>
+          <th>
+            <a
+              href="?sort_by=Rentabilidad&order={{ 'asc' if sort_by != 'Rentabilidad' or order == 'desc' else 'desc' }}"
+            >
+              Rentabilidad (%)
+            </a>
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dividendo in dividendos %}
+        <tr>
+          <td>{{ dividendo[0] }}</td>
+          <!-- ID del dividendo -->
+          <td>{{ dividendo[1] }}</td>
+          <!-- Nombre -->
+          <td>{{ dividendo[2] }}</td>
+          <!-- Fecha Cierre -->
+          <td>{{ dividendo[3] }}</td>
+          <!-- Fecha Pago -->
+          <td>{{ "{:,.2f}".format(dividendo[4]) }}</td>
+          <!-- Valor por Acción -->
+          <td>{{ dividendo[5] }}</td>
+          <!-- Moneda -->
+          <td>{{ "{:,.2f}".format(dividendo[6]) }}</td>
+          <!-- Valor Total -->
+          <td>{{ "{:,.2f}".format(dividendo[7] or 0) }}%</td>
+          <!-- Rentabilidad -->
+          <td>
+            <!-- Botones de acción -->
+            <a href="/edit_dividendo/{{ dividendo[0] }}"
+              ><button>Editar</button></a
+            >
+            <form
+              action="{{ url_for('delete_dividendo', id_dividendo=dividendo[0]) }}"
+              method="POST"
+              style="display: inline"
+              onsubmit="return confirm('¿Estás seguro de eliminar este dividendo?');"
+            >
+              <!-- Campo oculto para enviar el ID de la acción -->
+              <input type="hidden" name="id_accion" value="{{ id_accion }}" />
+              <button type="submit" style="background-color: red; color: white">
+                Eliminar
+              </button>
+              <a
+                href="{{ url_for('formulario_add_dividendo', id_accion=id_accion) }}"
+              >
+              </a>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br />
+    <button onclick="location.href='/acciones'">Volver a Acciones</button>
+  </body>
+</html>

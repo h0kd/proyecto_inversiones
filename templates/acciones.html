@@ -144,7 +144,16 @@
               Costo Total
             </a>
           </th>
+          <th>
+            <a
+              href="?sort_by=PrecioPromedioCompra&order={{ 'asc' if sort_by != 'PrecioPromedioCompra' or order == 'desc' else 'desc' }}"
+            >
+              Precio Promedio Compra
+            </a>
+          </th>
           <th>Factura</th>
+          <th>Dividendos</th>
+          <!-- Nueva columna -->
         </tr>
       </thead>
       <tbody>
@@ -159,6 +168,7 @@
           <td>{{ "{:,.2f}".format(accion[6]).replace(',', '.') }}</td>
           <td>{{ "{:,.2f}".format(accion[7] or 0).replace(',', '.') }}</td>
           <td>{{ "{:,.2f}".format(accion[8]).replace(',', '.') }}</td>
+          <td>{{ "{:,.2f}".format(accion[10] or 0).replace(',', '.') }}</td>
           <td>
             {% if accion[9] %}
             <a
@@ -171,6 +181,12 @@
             {% else %}
             <span class="no-file">Sin archivo</span>
             {% endif %}
+          </td>
+          <td>
+            <!-- Botón para el historial de dividendos -->
+            <a href="/dividendos/{{ accion[0] }}"
+              ><button>Historial Dividendos</button></a
+            >
           </td>
         </tr>
         {% endfor %}
